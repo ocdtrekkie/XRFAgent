@@ -1,0 +1,1 @@
+sc create "XRFAgent" binpath="C:\Program Files\XRFAgent\XRFAgent.exe" displayname="XRF Agent Service"
