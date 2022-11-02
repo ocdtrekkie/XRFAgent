@@ -14,6 +14,10 @@ namespace XRFAgent
     {
         public static WebClient UpdateDownloadClient;
 
+        // public static void Load() NOT NEEDED
+
+        // public static void Unload() NOT NEEDED
+
         public static int Check_Version()
         {
             Version currentVersion = Assembly.GetExecutingAssembly().GetName().Version;

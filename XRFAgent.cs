@@ -22,10 +22,10 @@ namespace XRFAgent
             Stopwatch LoadTime = new Stopwatch();
             LoadTime.Start();
 
-            modLogging.Create_Log();
+            modLogging.Load();
             modLogging.Log_Event("XRFAgent starting", EventLogEntryType.Information);
             modUpdate.Check_Version();
-            modDatabase.Connect_DB();
+            modDatabase.Load();
             modLogging.Log_Event("Database connected", EventLogEntryType.Information);
 
             LoadTime.Stop();
@@ -35,7 +35,7 @@ namespace XRFAgent
         protected override void OnStop()
         {
             modLogging.Log_Event("XRFAgent stopping", EventLogEntryType.Information);
-            modDatabase.Close_DB();
+            modDatabase.Unload();
             modLogging.Log_Event("XRFAgent stopped", EventLogEntryType.Information);
         }
     }

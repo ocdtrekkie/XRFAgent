@@ -12,16 +12,16 @@ namespace XRFAgent
     {
         public static SQLiteConnection conn;
 
-        public static void Close_DB()
-        {
-            conn.Close();
-            conn.Dispose();
-        }
-
-        public static void Connect_DB()
+        public static void Load()
         {
             conn = new SQLiteConnection(Properties.Settings.Default.Database_FileURI);
             conn.CreateTable<Config>();
+        }
+
+        public static void Unload()
+        {
+            conn.Close();
+            conn.Dispose();
         }
 
         [Table("CONFIG")]

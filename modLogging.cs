@@ -11,7 +11,7 @@ namespace XRFAgent
     {
         public static EventLog agentlog;
 
-        public static void Create_Log()
+        public static void Load()
         {
             if (EventLog.SourceExists("XRFAgent") == false)
             {
@@ -21,6 +21,8 @@ namespace XRFAgent
             agentlog.Source = "XRFAgent";
             agentlog.Log = "Application";
         }
+
+        // public static void Unload() NOT NEEDED
 
         public static void Log_Event(string LogMessage, EventLogEntryType LogType, int LogID = 0)
         {
