@@ -33,20 +33,20 @@ namespace XRFAgent
             public string Value { get; set; }
         }
 
-        public int AddConfig(Config config)
+        public static int AddConfig(Config config)
         {
             int result = conn.Insert(config);
             return result;
         }
 
-        public int UpdateConfig(Config config)
+        public static int UpdateConfig(Config config)
         {
             int result = 0;
             result = conn.Update(config);
             return result;
         }
 
-        public int AddOrUpdateConfig(Config config)
+        public static int AddOrUpdateConfig(Config config)
         {
             int result = UpdateConfig(config);
             if (result == 0)
@@ -56,7 +56,7 @@ namespace XRFAgent
             return result;
         }
 
-        public string GetConfig(string key)
+        public static string GetConfig(string key)
         {
             var Value = from c in conn.Table<Config>()
                         where c.Key == key

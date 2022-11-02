@@ -27,6 +27,7 @@ namespace XRFAgent
             modUpdate.Check_Version();
             modDatabase.Load();
             modLogging.Log_Event("Database connected", EventLogEntryType.Information);
+            modSync.Load();
 
             LoadTime.Stop();
             modLogging.Log_Event("XRFAgent started in " + LoadTime.Elapsed.Milliseconds + " ms", EventLogEntryType.Information);
@@ -35,6 +36,7 @@ namespace XRFAgent
         protected override void OnStop()
         {
             modLogging.Log_Event("XRFAgent stopping", EventLogEntryType.Information);
+            modSync.Unload();
             modDatabase.Unload();
             modLogging.Log_Event("XRFAgent stopped", EventLogEntryType.Information);
         }

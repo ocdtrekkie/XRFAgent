@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="modDatabase.cs" />
     <Compile Include="modLogging.cs" />
+    <Compile Include="modSync.cs" />
     <Compile Include="modUpdate.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>

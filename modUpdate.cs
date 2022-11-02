@@ -20,6 +20,7 @@ namespace XRFAgent
 
         public static int Check_Version()
         {
+            // TODO Only check for updates if we are online
             Version currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
             UpdateDownloadClient = new WebClient();
             int latestVersion = -1;
