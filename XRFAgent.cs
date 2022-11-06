@@ -27,6 +27,7 @@ namespace XRFAgent
             modUpdate.Check_Version();
             modDatabase.Load();
             modLogging.Log_Event("Database connected", EventLogEntryType.Information);
+            modNetwork.Load();
             modSync.Load();
 
             LoadTime.Stop();
@@ -37,6 +38,7 @@ namespace XRFAgent
         {
             modLogging.Log_Event("XRFAgent stopping", EventLogEntryType.Information);
             modSync.Unload();
+            modNetwork.Unload();
             modDatabase.Unload();
             modLogging.Log_Event("XRFAgent stopped", EventLogEntryType.Information);
         }
