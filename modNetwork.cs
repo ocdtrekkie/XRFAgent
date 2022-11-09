@@ -16,6 +16,9 @@ namespace XRFAgent
         private static string Ping_PublicIPSource;
         public static bool IsOnline = true; // assume until tested
 
+        /// <summary>
+        /// Loads the network module: Schedules connectivity checks and checks the public IP
+        /// </summary>
         public static void Load()
         {
             Ping_InternetCheckAddress = modDatabase.GetConfig("Ping_InternetCheckAddress");
@@ -31,7 +34,7 @@ namespace XRFAgent
             }
 
             PingTimer = new System.Timers.Timer();
-            PingTimer.Elapsed += new ElapsedEventHandler(PingInternet);
+            PingTimer.Elapsed += new ElapsedEventHandler(PingInternetHandler);
             PingTimer.Interval = 60000; // 1 min
             PingTimer.Enabled = true;
             modLogging.Log_Event("Connectivity checks scheduled", EventLogEntryType.Information);
@@ -40,6 +43,9 @@ namespace XRFAgent
             InitialGetPublicIP.Start();
         }
 
+        /// <summary>
+        /// Unloads the network module: Stops connectivity checks
+        /// </summary>
         public static void Unload()
         {
             if (PingTimer != null)
@@ -48,6 +54,10 @@ namespace XRFAgent
             }
         }
 
+        /// <summary>
+        /// Checks a public service for this agent's public IP address
+        /// </summary>
+        /// <returns>(string) Public IP address</returns>
         public static string GetPublicIPAddress()
         {
             if (IsOnline == true)
@@ -85,29 +95,12 @@ namespace XRFAgent
             else return "Not online";
         }
 
-        public static void PingInternet(object sender, EventArgs e)
-        {
-            string response = "";
-            response = SendPing(Ping_InternetCheckAddress);
-            if (response.StartsWith("Reply from"))
-            {
-                if (IsOnline == false)
-                {
-                    modLogging.Log_Event("System is now connected to the Internet", EventLogEntryType.Information);
-                    GetPublicIPAddress();
-                }    
-                IsOnline = true;
-            }
-            else
-            {
-                if (IsOnline == true)
-                {
-                    modLogging.Log_Event("System is not connected to the Internet", EventLogEntryType.Warning);
-                }
-                IsOnline = false;
-            }
-        }
-
+        /// <summary>
+        /// Sends a ping packet
+        /// </summary>
+        /// <param name="Host">(string) Destination</param>
+        /// <param name="repeat">(int) Number of times to try</param>
+        /// <returns>(string) Result of ping attempt</returns>
         public static string SendPing(string Host, int repeat = 1)
         {
             try
@@ -147,9 +140,40 @@ namespace XRFAgent
             }
         }
 
+        /// <summary>
+        /// Handler to launch initial public IP check on a new Thread
+        /// </summary>
         public static void InitialGetPublicIPHandler()
         {
             GetPublicIPAddress();
+        }
+
+        /// <summary>
+        /// Handler to launch scheduled connectivity checks
+        /// </summary>
+        /// <param name="sender">(object) Sender</param>
+        /// <param name="e">(EventArgs) Event Arguments</param>
+        public static void PingInternetHandler(object sender, EventArgs e)
+        {
+            string response = "";
+            response = SendPing(Ping_InternetCheckAddress);
+            if (response.StartsWith("Reply from"))
+            {
+                if (IsOnline == false)
+                {
+                    modLogging.Log_Event("System is now connected to the Internet", EventLogEntryType.Information);
+                    GetPublicIPAddress();
+                }
+                IsOnline = true;
+            }
+            else
+            {
+                if (IsOnline == true)
+                {
+                    modLogging.Log_Event("System is not connected to the Internet", EventLogEntryType.Warning);
+                }
+                IsOnline = false;
+            }
         }
     }
 }

@@ -14,6 +14,9 @@ namespace XRFAgent
         private static string Sync_SandstormToken;
         private static string Sync_AccessKey;
 
+        /// <summary>
+        /// Loads the sync module: Schedules heartbeats
+        /// </summary>
         public static void Load()
         {
             Sync_ServerURL = modDatabase.GetConfig("Sync_ServerURL");
@@ -36,6 +39,9 @@ namespace XRFAgent
             modLogging.Log_Event("Sync heartbeat scheduled", EventLogEntryType.Information);
         }
 
+        /// <summary>
+        /// Unloads the sync module: Stops heartbeats
+        /// </summary>
         public static void Unload()
         {
             if (HeartbeatTimer != null)
@@ -44,6 +50,12 @@ namespace XRFAgent
             }
         }
 
+        /// <summary>
+        /// Sends a message to the sync server
+        /// </summary>
+        /// <param name="Destination">(string) Intended destination of the message</param>
+        /// <param name="MessageType">(string) Type of message being sent</param>
+        /// <param name="Message">(string) Contents of message being sent</param>
         public static async void SendMessage(string Destination, string MessageType, string Message)
         {
             // TODO Only send messages if we are online
@@ -70,11 +82,19 @@ namespace XRFAgent
             }
         }
 
+        /// <summary>
+        /// Handler to launch initial heartbeat on a new Thread
+        /// </summary>
         public static void InitialHeartbeatHandler()
         {
             SendMessage("server", "heartbeat", "none");
         }
 
+        /// <summary>
+        /// Handler to launch scheduled heartbeats
+        /// </summary>
+        /// <param name="sender">(object) Sender</param>
+        /// <param name="e">(EventArgs) Event Arguments</param>
         public static void SendHeartbeatHandler(object sender, EventArgs e)
         {
             SendMessage("server", "heartbeat", "none");
