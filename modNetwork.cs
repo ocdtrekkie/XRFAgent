@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
+using System.Net;
 using System.Net.NetworkInformation;
 using System.Text;
+using System.Threading;
 using System.Timers;
 
 namespace XRFAgent
@@ -33,7 +36,8 @@ namespace XRFAgent
             PingTimer.Enabled = true;
             modLogging.Log_Event("Connectivity checks scheduled", EventLogEntryType.Information);
 
-            // TODO GetPublicIPAddress() when starting application
+            Thread InitialGetPublicIP = new Thread(InitialGetPublicIPHandler);
+            InitialGetPublicIP.Start();
         }
 
         public static void Unload()
@@ -44,7 +48,42 @@ namespace XRFAgent
             }
         }
 
-        // TODO Implement GetPublicIPAddress()
+        public static string GetPublicIPAddress()
+        {
+            if (IsOnline == true)
+            {
+                try
+                {
+                    if (Ping_PublicIPSource == "dyndns")
+                    {
+                        string reqUrl = "http://checkip.dyndns.org";
+                        WebRequest req = WebRequest.Create(reqUrl);
+                        WebResponse resp = req.GetResponse();
+                        StreamReader sr = new StreamReader(resp.GetResponseStream());
+                        string response = sr.ReadToEnd().Trim();
+                        string[] responseArray = response.Split(':');
+                        string[] responseArray2 = responseArray[1].Split('<');
+                        string newPublicIP = responseArray2[0].Trim();
+
+                        string oldPublicIP = modDatabase.GetConfig("Ping_LastKnownPublicIP");
+                        if (oldPublicIP != newPublicIP)
+                        {
+                            modLogging.Log_Event("Public IP address changed from " + oldPublicIP + " to " + newPublicIP, EventLogEntryType.Warning);
+                            modDatabase.AddOrUpdateConfig(new modDatabase.Config { Key = "Ping_LastKnownPublicIP", Value = newPublicIP });
+                        }
+
+                        return newPublicIP;
+                    }
+                    else return "No valid public IP source set";
+                }
+                catch (Exception err)
+                {
+                    modLogging.Log_Event(err.Message, EventLogEntryType.Error, 6012);
+                    return "Error";
+                }
+            }
+            else return "Not online";
+        }
 
         public static void PingInternet(object sender, EventArgs e)
         {
@@ -55,7 +94,7 @@ namespace XRFAgent
                 if (IsOnline == false)
                 {
                     modLogging.Log_Event("System is now connected to the Internet", EventLogEntryType.Information);
-                    // TODO GetPublicIPAddress() when online after being offline
+                    GetPublicIPAddress();
                 }    
                 IsOnline = true;
             }
@@ -106,6 +145,11 @@ namespace XRFAgent
                 modLogging.Log_Event(err.Message, EventLogEntryType.Error, 6011);
                 return "Ping error";
             }
+        }
+
+        public static void InitialGetPublicIPHandler()
+        {
+            GetPublicIPAddress();
         }
     }
 }

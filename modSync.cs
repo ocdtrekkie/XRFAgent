@@ -50,8 +50,8 @@ namespace XRFAgent
             try
             {
                 HttpClient MessageClient = new HttpClient();
-                // TODO Get last known public IP address for &ip_address=
-                HttpRequestMessage MessageBuilder = new HttpRequestMessage(HttpMethod.Post, Sync_ServerURL + "?message_type=" + MessageType + "&destination=" + Destination + "&access_key=" + Sync_AccessKey + "&message=" + Message + "&user_agent=XRFAgent/" + Assembly.GetExecutingAssembly().GetName().Version);
+                string publicIP = modDatabase.GetConfig("Ping_LastKnownPublicIP");
+                HttpRequestMessage MessageBuilder = new HttpRequestMessage(HttpMethod.Post, Sync_ServerURL + "?message_type=" + MessageType + "&destination=" + Destination + "&access_key=" + Sync_AccessKey + "&message=" + Message + "&user_agent=XRFAgent/" + Assembly.GetExecutingAssembly().GetName().Version + "&ip_address=" + publicIP);
                 TimeSpan httpTimeout = TimeSpan.FromSeconds(10);
                 MessageClient.Timeout = httpTimeout;
                 string EncodedCreds = System.Convert.ToBase64String(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes("sandstorm:" + Sync_SandstormToken));

@@ -4,3 +4,4 @@
 6002 - Sync error
 
 6011 - Ping error
+6012 - Get public IP error
