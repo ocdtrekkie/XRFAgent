@@ -14,10 +14,20 @@ namespace XRFAgent
     {
         public static WebClient UpdateDownloadClient;
 
-        // public static void Load() NOT NEEDED
+        /// <summary>
+        /// Loading the update module is NOT NEEDED
+        /// </summary>
+        public static void Load() { }
 
-        // public static void Unload() NOT NEEDED
+        /// <summary>
+        /// Unloading the update module is NOT NEEDED
+        /// </summary>
+        public static void Unload() { }
 
+        /// <summary>
+        /// Checks to see if a newer version of the agent is available
+        /// </summary>
+        /// <returns>(int) -1 for error, 0 for up-to-date, x for latest version</returns>
         public static int Check_Version()
         {
             // TODO Only check for updates if we are online
@@ -50,6 +60,10 @@ namespace XRFAgent
             }
         }
 
+        /// <summary>
+        /// Checks to see if a newer version of the agent is available and initiates an update
+        /// </summary>
+        /// <returns>(int) -1 for error, 0 for up-to-date, x for latest version</returns>
         public static int Update_Agent()
         {
             int updateNeeded = Check_Version();
