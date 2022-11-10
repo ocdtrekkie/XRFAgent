@@ -96,7 +96,7 @@ namespace XRFAgent
         }
 
         /// <summary>
-        /// Sends a ping packet
+        /// Attempts a specified number of pings until it receives a successful response
         /// </summary>
         /// <param name="Host">(string) Destination</param>
         /// <param name="repeat">(int) Number of times to try</param>
@@ -107,7 +107,7 @@ namespace XRFAgent
             {
                 Ping a = new Ping();
                 PingReply b;
-                string txtlog = "";
+                string responseData = "";
                 PingOptions c = new PingOptions();
                 c.DontFragment = true;
                 c.Ttl = 64;
@@ -119,19 +119,15 @@ namespace XRFAgent
                     b = a.Send(Host, 2000, bt, c);
                     if (b.Status == IPStatus.Success)
                     {
-                        txtlog += "Reply from " + Host + " in " + b.RoundtripTime.ToString() + " ms, ttl " + b.Options.Ttl;
+                        responseData = "Reply from " + Host + " in " + b.RoundtripTime.ToString() + " ms, ttl " + b.Options.Ttl;
+                        return responseData;
                     }
                     else
                     {
-
-                        txtlog += b.Status.ToString();
-                    }
-                    if (i != repeat)
-                    {
-                        txtlog += Environment.NewLine;
+                        responseData = b.Status.ToString();
                     }
                 }
-                return txtlog;
+                return responseData;
             }
             catch (Exception err)
             {
@@ -156,7 +152,7 @@ namespace XRFAgent
         public static void PingInternetHandler(object sender, EventArgs e)
         {
             string response = "";
-            response = SendPing(Ping_InternetCheckAddress);
+            response = SendPing(Ping_InternetCheckAddress, 4);
             if (response.StartsWith("Reply from"))
             {
                 if (IsOnline == false)
