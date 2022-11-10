@@ -12,18 +12,27 @@ namespace XRFAgent
     {
         public static SQLiteConnection conn;
 
+        /// <summary>
+        /// Loads the database module: Creates database connection and creates tables
+        /// </summary>
         public static void Load()
         {
             conn = new SQLiteConnection(Properties.Settings.Default.Database_FileURI);
             conn.CreateTable<Config>();
         }
 
+        /// <summary>
+        /// Unloads the database module: Closes database connection
+        /// </summary>
         public static void Unload()
         {
             conn.Close();
             conn.Dispose();
         }
 
+        /// <summary>
+        /// Class defining the CONFIG table
+        /// </summary>
         [Table("CONFIG")]
         public class Config
         {
@@ -33,12 +42,22 @@ namespace XRFAgent
             public string Value { get; set; }
         }
 
+        /// <summary>
+        /// Adds a new setting to the CONFIG table
+        /// </summary>
+        /// <param name="config">(Config) Setting to add</param>
+        /// <returns>(int) Number of rows added</returns>
         public static int AddConfig(Config config)
         {
             int result = conn.Insert(config);
             return result;
         }
 
+        /// <summary>
+        /// Updates an existing setting in the CONFIG table
+        /// </summary>
+        /// <param name="config">(Config) Setting to update</param>
+        /// <returns>(int) Number of rows updated</returns>
         public static int UpdateConfig(Config config)
         {
             int result = 0;
@@ -46,6 +65,11 @@ namespace XRFAgent
             return result;
         }
 
+        /// <summary>
+        /// Updates an existing setting in the CONFIG table or adds it if it does not exist
+        /// </summary>
+        /// <param name="config">(Config) Setting to add or update</param>
+        /// <returns>(int) Number of rows updated</returns>
         public static int AddOrUpdateConfig(Config config)
         {
             int result = UpdateConfig(config);
@@ -56,6 +80,11 @@ namespace XRFAgent
             return result;
         }
 
+        /// <summary>
+        /// Gets the value of a setting in the CONFIG table
+        /// </summary>
+        /// <param name="key">(string) Name of setting</param>
+        /// <returns>(string) Value of setting</returns>
         public static string GetConfig(string key)
         {
             var Value = from c in conn.Table<Config>()
