@@ -5,3 +5,6 @@
 
 6011 - Ping error
 6012 - Get public IP error
+
+6021 - Update check failed
+6022 - Update failed

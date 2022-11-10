@@ -30,7 +30,11 @@ namespace XRFAgent
         /// <returns>(int) -1 for error, 0 for up-to-date, x for latest version</returns>
         public static int Check_Version()
         {
-            // TODO Only check for updates if we are online
+            if (modNetwork.IsOnline == false)
+            {
+                modLogging.Log_Event("Update check failed", EventLogEntryType.Error, 6021);
+                return -1;
+            }    
             Version currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
             UpdateDownloadClient = new WebClient();
             int latestVersion = -1;
@@ -40,7 +44,7 @@ namespace XRFAgent
             }
             catch(Exception err)
             {
-                modLogging.Log_Event(err.Message, EventLogEntryType.Error);
+                modLogging.Log_Event(err.Message, EventLogEntryType.Error, 6021);
                 return -1;
             }
             if (currentVersion.Revision >= latestVersion)
@@ -55,7 +59,7 @@ namespace XRFAgent
             }
             else
             {
-                modLogging.Log_Event("Update check failed", EventLogEntryType.Error);
+                modLogging.Log_Event("Update check failed", EventLogEntryType.Error, 6021);
                 return -1;
             }
         }
@@ -89,7 +93,7 @@ namespace XRFAgent
                 }
                 catch(Exception err)
                 {
-                    modLogging.Log_Event(err.Message, EventLogEntryType.Error);
+                    modLogging.Log_Event(err.Message, EventLogEntryType.Error, 6022);
                     return -1;
                 }
             }
