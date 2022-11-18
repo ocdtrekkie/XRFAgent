@@ -78,7 +78,7 @@ namespace XRFAgent
 
             public void Stop()
             {
-                this.server.Disconnect();
+                if (this.server.IsConnected) { this.server.Disconnect(); }
             }
 
             void IDisposable.Dispose()
