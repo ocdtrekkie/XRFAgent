@@ -38,6 +38,7 @@ namespace XRFAgent
             modLogging.Log_Event("Database connected", EventLogEntryType.Information);
             modNetwork.Load();
             modSync.Load();
+            modIpcServer.Load();
 
             LoadTime.Stop();
             modLogging.Log_Event("XRFAgent started in " + LoadTime.Elapsed.Milliseconds + " ms", EventLogEntryType.Information);
