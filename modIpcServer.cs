@@ -10,11 +10,24 @@ namespace XRFAgent
 {
     internal class modIpcServer
     {
+        private static NamedPipeServer listen;
+
+        /// <summary>
+        /// Loads the IPC server module
+        /// </summary>
         public static void Load()
         {
-            NamedPipeServer listen = new NamedPipeServer();
+            listen = new NamedPipeServer();
             listen.Start();
             listen.Received += Listen_Received;
+        }
+
+        /// <summary>
+        /// Unloads the IPC server module
+        /// </summary>
+        public static void Unload()
+        {
+            listen.Stop();
         }
 
         private static void Listen_Received(object sender, DataReceivedEventArgs e)
@@ -24,7 +37,7 @@ namespace XRFAgent
 
         public sealed class NamedPipeServer : IIpcServer
         {
-            private readonly NamedPipeServerStream server = new NamedPipeServerStream("XRFAgentCommandServer", PipeDirection.In);
+            private NamedPipeServerStream server;
 
             private void OnReceived(DataReceivedEventArgs e)
             {
@@ -40,15 +53,24 @@ namespace XRFAgent
 
             public void Start()
             {
+                server = new NamedPipeServerStream("XRFAgentCommandServer", PipeDirection.In);
+
                 Task.Factory.StartNew(() =>
                 {
                     while (true)
                     {
-                        this.server.WaitForConnection();
-
-                        using (var reader = new StreamReader(this.server))
+                        try
                         {
-                            this.OnReceived(new DataReceivedEventArgs(reader.ReadToEnd()));
+                            this.server.WaitForConnection();
+
+                            using (var reader = new StreamReader(this.server,Encoding.UTF8,false,1024,true))
+                            {
+                                this.OnReceived(new DataReceivedEventArgs(reader.ReadToEnd()));
+                            }
+                        }
+                        catch(IOException)
+                        {
+                            this.server.Disconnect();
                         }
                     }
                 });

@@ -47,6 +47,7 @@ namespace XRFAgent
         protected override void OnStop()
         {
             modLogging.Log_Event("XRFAgent stopping", EventLogEntryType.Information);
+            modIpcServer.Unload();
             modSync.Unload();
             modNetwork.Unload();
             modDatabase.Unload();
