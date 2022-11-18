@@ -14,12 +14,17 @@ namespace XRFAgent
         /// </summary>
         static void Main()
         {
+#if !DEBUG
             ServiceBase[] ServicesToRun;
             ServicesToRun = new ServiceBase[]
             {
                 new XRFAgent()
             };
             ServiceBase.Run(ServicesToRun);
+#else
+            XRFAgent servRun = new XRFAgent();
+            servRun.OnDebug(null);
+#endif
         }
     }
 }

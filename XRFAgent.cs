@@ -17,6 +17,15 @@ namespace XRFAgent
             InitializeComponent();
         }
 
+        public void OnDebug(string[] args)
+        {
+            OnStart(args);
+            modLogging.Log_Event("XRFAgent is running in debug mode", EventLogEntryType.Warning);
+            Console.WriteLine("Press any key to exit...");
+            Console.ReadLine();
+            OnStop();
+        }
+
         protected override void OnStart(string[] args)
         {
             Stopwatch LoadTime = new Stopwatch();
