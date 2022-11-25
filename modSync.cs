@@ -72,9 +72,13 @@ namespace XRFAgent
 
                 if (MessageResponse.IsSuccessStatusCode != true)
                 {
-                    modLogging.Log_Event("Sync error", EventLogEntryType.Error, 6002);
+                    modLogging.Log_Event("Sync error:" + (int)MessageResponse.StatusCode + " " + MessageResponse.StatusCode, EventLogEntryType.Error, 6002);
                 }
-                // TODO Actually get responses and handle them from v1 API
+                else
+                {
+                    string ResponseContent = await MessageResponse.Content.ReadAsStringAsync();
+                    modLogging.Log_Event((int)MessageResponse.StatusCode + " " + MessageResponse.StatusCode + " " + ResponseContent, EventLogEntryType.Information);
+                }
             }
             catch (Exception err)
             {
