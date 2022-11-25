@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Net.Http;
 using System.Reflection;
+using System.Text.Json;
 using System.Threading;
 using System.Timers;
 
@@ -77,8 +78,23 @@ namespace XRFAgent
                 else
                 {
                     string ResponseContent = await MessageResponse.Content.ReadAsStringAsync();
-                    modLogging.Log_Event((int)MessageResponse.StatusCode + " " + MessageResponse.StatusCode + " " + ResponseContent, EventLogEntryType.Information);
+                    // VERBOSE: Uncomment to show JSON response from server
+                    // modLogging.Log_Event((int)MessageResponse.StatusCode + " " + MessageResponse.StatusCode + " " + ResponseContent, EventLogEntryType.Information);
+
+                    if (ResponseContent != "[]")
+                    {
+                        using (JsonDocument messagesReceived = JsonDocument.Parse(ResponseContent))
+                        {
+                            foreach (JsonElement element in messagesReceived.RootElement.EnumerateArray())
+                            {
+                                string source = element.GetProperty("source").ToString();
+                                string mesg = element.GetProperty("mesg").ToString();
+                                modCommand.Handle(mesg, "sync", source);
+                            }
+                        }
+                    }
                 }
+                MessageResponse.Dispose();
             }
             catch (Exception err)
             {
@@ -91,7 +107,7 @@ namespace XRFAgent
         /// </summary>
         public static void InitialHeartbeatHandler()
         {
-            SendMessage("server", "heartbeat", "none");
+            SendMessage("server", "fetch", "none");
         }
 
         /// <summary>
@@ -101,7 +117,7 @@ namespace XRFAgent
         /// <param name="e">(EventArgs) Event Arguments</param>
         public static void SendHeartbeatHandler(object sender, EventArgs e)
         {
-            SendMessage("server", "heartbeat", "none");
+            SendMessage("server", "fetch", "none");
         }
     }
 }
