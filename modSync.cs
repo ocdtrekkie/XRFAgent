@@ -105,7 +105,7 @@ namespace XRFAgent
         /// <summary>
         /// Handler to launch initial heartbeat on a new Thread
         /// </summary>
-        public static void InitialHeartbeatHandler()
+        private static void InitialHeartbeatHandler()
         {
             SendMessage("server", "fetch", "none");
         }
@@ -115,7 +115,7 @@ namespace XRFAgent
         /// </summary>
         /// <param name="sender">(object) Sender</param>
         /// <param name="e">(EventArgs) Event Arguments</param>
-        public static void SendHeartbeatHandler(object sender, EventArgs e)
+        private static void SendHeartbeatHandler(object sender, EventArgs e)
         {
             SendMessage("server", "fetch", "none");
         }

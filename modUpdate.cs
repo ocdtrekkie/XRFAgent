@@ -9,7 +9,7 @@ namespace XRFAgent
 {
     class modUpdate
     {
-        public static WebClient UpdateDownloadClient;
+        private static WebClient UpdateDownloadClient;
 
         /// <summary>
         /// Loading the update module is NOT NEEDED

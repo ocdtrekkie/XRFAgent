@@ -9,7 +9,7 @@ namespace XRFAgent
 {
     internal class modLogging
     {
-        public static EventLog agentlog;
+        private static EventLog agentlog;
         // TODO Create setting for Verbose logging
 
         /// <summary>

@@ -139,7 +139,7 @@ namespace XRFAgent
         /// <summary>
         /// Handler to launch initial public IP check on a new Thread
         /// </summary>
-        public static void InitialGetPublicIPHandler()
+        private static void InitialGetPublicIPHandler()
         {
             GetPublicIPAddress();
         }
@@ -149,7 +149,7 @@ namespace XRFAgent
         /// </summary>
         /// <param name="sender">(object) Sender</param>
         /// <param name="e">(EventArgs) Event Arguments</param>
-        public static void PingInternetHandler(object sender, EventArgs e)
+        private static void PingInternetHandler(object sender, EventArgs e)
         {
             string response = "";
             response = SendPing(Ping_InternetCheckAddress, 4);

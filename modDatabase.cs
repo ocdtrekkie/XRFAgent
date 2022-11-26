@@ -10,7 +10,7 @@ namespace XRFAgent
 {
     internal class modDatabase
     {
-        public static SQLiteConnection conn;
+        private static SQLiteConnection conn;
 
         /// <summary>
         /// Loads the database module: Creates database connection and creates tables
