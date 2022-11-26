@@ -55,6 +55,7 @@
     <Compile Include="modLogging.cs" />
     <Compile Include="modNetwork.cs" />
     <Compile Include="modSync.cs" />
+    <Compile Include="modSystem.cs" />
     <Compile Include="modUpdate.cs" />
     <Compile Include="modCommand.cs" />
     <Compile Include="Properties\Settings.Designer.cs">

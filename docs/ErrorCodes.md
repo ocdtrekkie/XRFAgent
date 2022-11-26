@@ -8,3 +8,5 @@
 
 6021 - Update check failed
 6022 - Update failed
+
+6031 - External process start error

@@ -25,6 +25,11 @@ namespace XRFAgent
             string[] inputData = inputCommand.Split(' ');
             switch (inputData[0])
             {
+                case "reboot" when inputData.Length == 2:
+                case "restart" when inputData.Length == 2:
+                    if (inputData[1] == "host") { outputResponse = modSystem.RebootHost(); } break;
+                case "shutdown" when inputData.Length == 2:
+                    if (inputData[1] == "host") { outputResponse = modSystem.ShutdownHost(); } break;
                 case "update" when inputData.Length == 2:
                     switch (inputData[1])
                     {
