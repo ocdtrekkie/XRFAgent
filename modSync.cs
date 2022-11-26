@@ -26,7 +26,7 @@ namespace XRFAgent
 
             if (string.IsNullOrEmpty(Sync_ServerURL) || string.IsNullOrEmpty(Sync_SandstormToken) || string.IsNullOrEmpty(Sync_AccessKey))
             {
-                modLogging.Log_Event("Sync settings are not configured!", EventLogEntryType.Error, 6001);
+                modLogging.LogEvent("Sync settings are not configured!", EventLogEntryType.Error, 6001);
                 return;
             }
 
@@ -37,7 +37,7 @@ namespace XRFAgent
 
             Thread InitialSyncHeartbeat = new Thread(InitialHeartbeatHandler);
             InitialSyncHeartbeat.Start();
-            modLogging.Log_Event("Sync heartbeat scheduled", EventLogEntryType.Information);
+            modLogging.LogEvent("Sync heartbeat scheduled", EventLogEntryType.Information);
         }
 
         /// <summary>
@@ -73,13 +73,13 @@ namespace XRFAgent
 
                 if (MessageResponse.IsSuccessStatusCode != true)
                 {
-                    modLogging.Log_Event("Sync error:" + (int)MessageResponse.StatusCode + " " + MessageResponse.StatusCode, EventLogEntryType.Error, 6002);
+                    modLogging.LogEvent("Sync error:" + (int)MessageResponse.StatusCode + " " + MessageResponse.StatusCode, EventLogEntryType.Error, 6002);
                 }
                 else
                 {
                     string ResponseContent = await MessageResponse.Content.ReadAsStringAsync();
                     // VERBOSE: Uncomment to show JSON response from server
-                    // modLogging.Log_Event((int)MessageResponse.StatusCode + " " + MessageResponse.StatusCode + " " + ResponseContent, EventLogEntryType.Information);
+                    // modLogging.LogEvent((int)MessageResponse.StatusCode + " " + MessageResponse.StatusCode + " " + ResponseContent, EventLogEntryType.Information);
 
                     if (ResponseContent != "[]")
                     {
@@ -98,7 +98,7 @@ namespace XRFAgent
             }
             catch (Exception err)
             {
-                modLogging.Log_Event(err.Message, EventLogEntryType.Error, 6002);
+                modLogging.LogEvent(err.Message, EventLogEntryType.Error, 6002);
             }
         }
 

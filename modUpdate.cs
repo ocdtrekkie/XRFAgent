@@ -25,11 +25,11 @@ namespace XRFAgent
         /// Checks to see if a newer version of the agent is available
         /// </summary>
         /// <returns>(int) -1 for error, 0 for up-to-date, x for latest version</returns>
-        public static int Check_Version()
+        public static int CheckVersion()
         {
             if (modNetwork.IsOnline == false)
             {
-                modLogging.Log_Event("Update check failed", EventLogEntryType.Error, 6021);
+                modLogging.LogEvent("Update check failed", EventLogEntryType.Error, 6021);
                 return -1;
             }    
             Version currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
@@ -41,22 +41,22 @@ namespace XRFAgent
             }
             catch(Exception err)
             {
-                modLogging.Log_Event(err.Message, EventLogEntryType.Error, 6021);
+                modLogging.LogEvent(err.Message, EventLogEntryType.Error, 6021);
                 return -1;
             }
             if (currentVersion.Revision >= latestVersion)
             {
-                modLogging.Log_Event("No update needed", EventLogEntryType.Information);
+                modLogging.LogEvent("No update needed", EventLogEntryType.Information);
                 return 0;
             }
             else if (currentVersion.Revision < latestVersion)
             {
-                modLogging.Log_Event("Application revision is " + currentVersion.Revision.ToString() + ", current version is " + latestVersion.ToString(), EventLogEntryType.Information);
+                modLogging.LogEvent("Application revision is " + currentVersion.Revision.ToString() + ", current version is " + latestVersion.ToString(), EventLogEntryType.Information);
                 return latestVersion;
             }
             else
             {
-                modLogging.Log_Event("Update check failed", EventLogEntryType.Error, 6021);
+                modLogging.LogEvent("Update check failed", EventLogEntryType.Error, 6021);
                 return -1;
             }
         }
@@ -65,9 +65,9 @@ namespace XRFAgent
         /// Checks to see if a newer version of the agent is available and initiates an update
         /// </summary>
         /// <returns>(int) -1 for error, 0 for up-to-date, x for latest version</returns>
-        public static int Update_Agent()
+        public static int UpdateAgent()
         {
-            int updateNeeded = Check_Version();
+            int updateNeeded = CheckVersion();
             if (updateNeeded >= 1)
             {
                 try
@@ -90,7 +90,7 @@ namespace XRFAgent
                 }
                 catch(Exception err)
                 {
-                    modLogging.Log_Event(err.Message, EventLogEntryType.Error, 6022);
+                    modLogging.LogEvent(err.Message, EventLogEntryType.Error, 6022);
                     return -1;
                 }
             }

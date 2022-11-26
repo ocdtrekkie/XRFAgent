@@ -20,7 +20,7 @@ namespace XRFAgent
         public static void Handle(string inputCommand, string inputSource, string requestAuth)
         {
             string outputResponse = null;
-            modLogging.Log_Event("Command, source: " + inputSource + ", authority: " + requestAuth + ", command: " + inputCommand, EventLogEntryType.Information);
+            modLogging.LogEvent("Command, source: " + inputSource + ", authority: " + requestAuth + ", command: " + inputCommand, EventLogEntryType.Information);
 
             string[] inputData = inputCommand.Split(' ');
             switch (inputData[0])
@@ -29,7 +29,7 @@ namespace XRFAgent
                     switch (inputData[1])
                     {
                         case "agent":
-                            int result = modUpdate.Update_Agent();
+                            int result = modUpdate.UpdateAgent();
                             switch (result)
                             {
                                 case -1:
@@ -49,7 +49,7 @@ namespace XRFAgent
             {
                 outputResponse = "Unable to process command";
             }
-            modLogging.Log_Event("Response, command: " + inputCommand + ", response: " + outputResponse, EventLogEntryType.Information);
+            modLogging.LogEvent("Response, command: " + inputCommand + ", response: " + outputResponse, EventLogEntryType.Information);
         }
     }
 }

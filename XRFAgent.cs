@@ -20,7 +20,7 @@ namespace XRFAgent
         public void OnDebug(string[] args)
         {
             OnStart(args);
-            modLogging.Log_Event("XRFAgent is running in debug mode", EventLogEntryType.Warning);
+            modLogging.LogEvent("XRFAgent is running in debug mode", EventLogEntryType.Warning);
             Console.WriteLine("Press any key to exit...");
             Console.ReadLine();
             OnStop();
@@ -32,24 +32,24 @@ namespace XRFAgent
             LoadTime.Start();
 
             modLogging.Load();
-            modLogging.Log_Event("XRFAgent starting", EventLogEntryType.Information);
-            modUpdate.Check_Version();
+            modLogging.LogEvent("XRFAgent starting", EventLogEntryType.Information);
+            modUpdate.CheckVersion();
             modDatabase.Load();
-            modLogging.Log_Event("Database connected", EventLogEntryType.Information);
+            modLogging.LogEvent("Database connected", EventLogEntryType.Information);
             modNetwork.Load();
             modSync.Load();
 
             LoadTime.Stop();
-            modLogging.Log_Event("XRFAgent started in " + LoadTime.Elapsed.Milliseconds + " ms", EventLogEntryType.Information);
+            modLogging.LogEvent("XRFAgent started in " + LoadTime.Elapsed.Milliseconds + " ms", EventLogEntryType.Information);
         }
 
         protected override void OnStop()
         {
-            modLogging.Log_Event("XRFAgent stopping", EventLogEntryType.Information);
+            modLogging.LogEvent("XRFAgent stopping", EventLogEntryType.Information);
             modSync.Unload();
             modNetwork.Unload();
             modDatabase.Unload();
-            modLogging.Log_Event("XRFAgent stopped", EventLogEntryType.Information);
+            modLogging.LogEvent("XRFAgent stopped", EventLogEntryType.Information);
         }
     }
 }

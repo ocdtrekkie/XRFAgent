@@ -37,7 +37,7 @@ namespace XRFAgent
             PingTimer.Elapsed += new ElapsedEventHandler(PingInternetHandler);
             PingTimer.Interval = 60000; // 1 min
             PingTimer.Enabled = true;
-            modLogging.Log_Event("Connectivity checks scheduled", EventLogEntryType.Information);
+            modLogging.LogEvent("Connectivity checks scheduled", EventLogEntryType.Information);
 
             Thread InitialGetPublicIP = new Thread(InitialGetPublicIPHandler);
             InitialGetPublicIP.Start();
@@ -78,7 +78,7 @@ namespace XRFAgent
                         string oldPublicIP = modDatabase.GetConfig("Ping_LastKnownPublicIP");
                         if (oldPublicIP != newPublicIP)
                         {
-                            modLogging.Log_Event("Public IP address changed from " + oldPublicIP + " to " + newPublicIP, EventLogEntryType.Warning);
+                            modLogging.LogEvent("Public IP address changed from " + oldPublicIP + " to " + newPublicIP, EventLogEntryType.Warning);
                             modDatabase.AddOrUpdateConfig(new modDatabase.Config { Key = "Ping_LastKnownPublicIP", Value = newPublicIP });
                         }
 
@@ -88,7 +88,7 @@ namespace XRFAgent
                 }
                 catch (Exception err)
                 {
-                    modLogging.Log_Event(err.Message, EventLogEntryType.Error, 6012);
+                    modLogging.LogEvent(err.Message, EventLogEntryType.Error, 6012);
                     return "Error";
                 }
             }
@@ -131,7 +131,7 @@ namespace XRFAgent
             }
             catch (Exception err)
             {
-                modLogging.Log_Event(err.Message, EventLogEntryType.Error, 6011);
+                modLogging.LogEvent(err.Message, EventLogEntryType.Error, 6011);
                 return "Ping error";
             }
         }
@@ -157,7 +157,7 @@ namespace XRFAgent
             {
                 if (IsOnline == false)
                 {
-                    modLogging.Log_Event("System is now connected to the Internet", EventLogEntryType.Information);
+                    modLogging.LogEvent("System is now connected to the Internet", EventLogEntryType.Information);
                     GetPublicIPAddress();
                 }
                 IsOnline = true;
@@ -166,7 +166,7 @@ namespace XRFAgent
             {
                 if (IsOnline == true)
                 {
-                    modLogging.Log_Event("System is not connected to the Internet", EventLogEntryType.Warning);
+                    modLogging.LogEvent("System is not connected to the Internet", EventLogEntryType.Warning);
                 }
                 IsOnline = false;
             }

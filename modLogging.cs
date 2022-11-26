@@ -37,7 +37,7 @@ namespace XRFAgent
         /// <param name="LogMessage">(string) Contents of the log message</param>
         /// <param name="LogType">(EventLogEntryType) Severity of log message</param>
         /// <param name="LogID">(int) Event ID or error code</param>
-        public static void Log_Event(string LogMessage, EventLogEntryType LogType, int LogID = 0)
+        public static void LogEvent(string LogMessage, EventLogEntryType LogType, int LogID = 0)
         {
             agentlog.WriteEntry(LogMessage, LogType, LogID);
         }
