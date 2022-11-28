@@ -25,6 +25,14 @@ namespace XRFAgent
             string[] inputData = inputCommand.Split(' ');
             switch (inputData[0])
             {
+                case "install" when inputData.Length == 2:
+                    switch (inputData[1])
+                    {
+                        case "quickassist":
+                            outputResponse = modSystem.InstallQuickAssist();
+                            break;
+                    }
+                    break;
                 case "reboot" when inputData.Length == 2:
                 case "restart" when inputData.Length == 2:
                     if (inputData[1] == "host") { outputResponse = modSystem.RebootHost(); } break;

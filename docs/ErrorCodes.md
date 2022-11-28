@@ -10,3 +10,4 @@
 6022 - Update failed
 
 6031 - External process start error
+6032 - Software installation error
