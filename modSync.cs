@@ -64,7 +64,8 @@ namespace XRFAgent
             {
                 HttpClient MessageClient = new HttpClient();
                 string publicIP = modDatabase.GetConfig("Ping_LastKnownPublicIP");
-                HttpRequestMessage MessageBuilder = new HttpRequestMessage(HttpMethod.Post, Sync_ServerURL + "?message_type=" + MessageType + "&destination=" + Destination + "&access_key=" + Sync_AccessKey + "&message=" + Message + "&user_agent=XRFAgent/" + Assembly.GetExecutingAssembly().GetName().Version + "&ip_address=" + publicIP);
+                string windowsVersion = modDatabase.GetConfig("System_LastKnownWindowsVersion");
+                HttpRequestMessage MessageBuilder = new HttpRequestMessage(HttpMethod.Post, Sync_ServerURL + "?message_type=" + MessageType + "&destination=" + Destination + "&access_key=" + Sync_AccessKey + "&message=" + Message + "&user_agent=XRFAgent/" + Assembly.GetExecutingAssembly().GetName().Version + "&ip_address=" + publicIP + "&windows_version=" + windowsVersion);
                 TimeSpan httpTimeout = TimeSpan.FromSeconds(10);
                 MessageClient.Timeout = httpTimeout;
                 string EncodedCreds = System.Convert.ToBase64String(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes("sandstorm:" + Sync_SandstormToken));
