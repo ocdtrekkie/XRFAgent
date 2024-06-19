@@ -19,6 +19,7 @@ namespace XRFAgent
         {
             conn = new SQLiteConnection(Properties.Settings.Default.Database_FileURI);
             conn.CreateTable<Config>();
+            conn.CreateTable<LocalQueue>();
         }
 
         /// <summary>
@@ -91,6 +92,32 @@ namespace XRFAgent
                         where c.Key == key
                         select c.Value;
             return Value.FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Class defining the LOCALQUEUE table
+        /// </summary>
+        [Table("LOCALQUEUE")]
+        public class LocalQueue
+        {
+            [PrimaryKey, AutoIncrement]
+            public int Id { get; set; }
+
+            public string Src { get; set; }
+
+            public string Auth { get; set; }
+
+            public string Dest { get; set; }
+
+            public string Mesg { get; set; }
+
+            public bool Recv { get; set; }
+        }
+
+        public static int EnqueueLocalMessage(LocalQueue localQueue)
+        {
+            int result = conn.Insert(localQueue);
+            return result;
         }
     }
 }

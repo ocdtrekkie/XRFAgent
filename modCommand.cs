@@ -20,11 +20,18 @@ namespace XRFAgent
         public static void Handle(string inputCommand, string inputSource, string requestAuth)
         {
             string outputResponse = null;
+            int result = 0;
             modLogging.LogEvent("Command, source: " + inputSource + ", authority: " + requestAuth + ", command: " + inputCommand, EventLogEntryType.Information);
 
             string[] inputData = inputCommand.Split(' ');
             switch (inputData[0])
             {
+                case "hac":
+                case "hacontroller":
+                    string inputCommandTrimmed = inputCommand.Remove(0, inputData[0].Length + 1);
+                    result = modDatabase.EnqueueLocalMessage(new modDatabase.LocalQueue { Src = inputSource, Auth = requestAuth, Dest = "hac", Mesg = inputCommandTrimmed, Recv = false });
+                    if (result == 1) { outputResponse = "Message to HAController queued"; } else { outputResponse = "Message to HAController not queued"; }
+                    break;
                 case "reboot" when inputData.Length == 2:
                 case "restart" when inputData.Length == 2:
                     if (inputData[1] == "host") { outputResponse = modSystem.RebootHost(); } break;
@@ -34,7 +41,7 @@ namespace XRFAgent
                     switch (inputData[1])
                     {
                         case "agent":
-                            int result = modUpdate.UpdateAgent();
+                            result = modUpdate.UpdateAgent();
                             switch (result)
                             {
                                 case -1:
