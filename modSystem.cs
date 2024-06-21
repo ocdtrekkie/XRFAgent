@@ -50,7 +50,11 @@ namespace XRFAgent
                         }
                     }
                 }
-                modLogging.LogEvent("Detected new software installed: " + NewSoftware, EventLogEntryType.Information, 6051);
+                if (NewSoftware != "")
+                {
+                    NewSoftware = NewSoftware.Substring(0, NewSoftware.Length - 2);
+                    modLogging.LogEvent("Detected new software installed: " + NewSoftware, EventLogEntryType.Information, 6051);
+                }
                 return "Installed Applications: " + count.ToString();
             }
             catch (Exception err)
