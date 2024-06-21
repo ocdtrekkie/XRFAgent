@@ -24,6 +24,7 @@ namespace XRFAgent
                 List<RegistryKey> UninstallKeys = new List<RegistryKey>() { Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"), Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall") };
                 RegistryKey SoftwareKey;
                 string SoftwareKeyName;
+                string NewSoftware = "";
                 int count = 0;
                 int result = 0;
                 modDatabase.InstalledSoftware SoftwareObj;
@@ -41,7 +42,7 @@ namespace XRFAgent
                                 result = modDatabase.UpdateSoftware(SoftwareObj);
                                 if (result == 0)
                                 {
-                                    modLogging.LogEvent("Detected new software installed: " + SoftwareKeyName, EventLogEntryType.Information, 6051);
+                                    NewSoftware = NewSoftware + SoftwareKeyName + ", ";
                                     result = modDatabase.AddSoftware(SoftwareObj);
                                 }
                                 count++;
@@ -49,6 +50,7 @@ namespace XRFAgent
                         }
                     }
                 }
+                modLogging.LogEvent("Detected new software installed: " + NewSoftware, EventLogEntryType.Information, 6051);
                 return "Installed Applications: " + count.ToString();
             }
             catch (Exception err)
