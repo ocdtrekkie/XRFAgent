@@ -18,29 +18,37 @@ namespace XRFAgent
 
         public static string GetInstalledSoftware()
         {
-            RegistryKey Products = Registry.LocalMachine.OpenSubKey("SOFTWARE\\MICROSOFT\\Windows\\CurrentVersion\\Installer\\UserData\\S-1-5-18\\Products");
-            RegistryKey SoftwareKey;
-            string SoftwareKeyName;
-            int count = 0;
-            int result = 0;
-            modDatabase.InstalledSoftware SoftwareObj;
-            foreach (string ProgramKey in Products.GetSubKeyNames())
+            try
             {
-                SoftwareKey = Products.OpenSubKey(ProgramKey).OpenSubKey("InstallProperties");
-                if (SoftwareKey != null)
+                RegistryKey Products = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\MICROSOFT\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Products");
+                RegistryKey SoftwareKey;
+                string SoftwareKeyName;
+                int count = 0;
+                int result = 0;
+                modDatabase.InstalledSoftware SoftwareObj;
+                foreach (string ProgramKey in Products.GetSubKeyNames())
                 {
-                    SoftwareKeyName = SoftwareKey.GetValue("DisplayName").ToString();
-                    SoftwareObj = new modDatabase.InstalledSoftware { Name = SoftwareKeyName, Version = SoftwareKey.GetValue("DisplayVersion").ToString(), Publisher = SoftwareKey.GetValue("Publisher").ToString(), InstallDate = SoftwareKey.GetValue("InstallDate").ToString() };
-                    result = modDatabase.UpdateSoftware(SoftwareObj);
-                    if (result == 0)
+                    SoftwareKey = Products.OpenSubKey(ProgramKey).OpenSubKey("InstallProperties");
+                    if (SoftwareKey != null)
                     {
-                        modLogging.LogEvent("Detected new software installed: " + SoftwareKeyName, EventLogEntryType.Information, 6051);
-                        result = modDatabase.AddSoftware(SoftwareObj);
+                        SoftwareKeyName = SoftwareKey.GetValue("DisplayName").ToString();
+                        SoftwareObj = new modDatabase.InstalledSoftware { Name = SoftwareKeyName, Version = SoftwareKey.GetValue("DisplayVersion").ToString(), Publisher = SoftwareKey.GetValue("Publisher").ToString(), InstallDate = SoftwareKey.GetValue("InstallDate").ToString() };
+                        result = modDatabase.UpdateSoftware(SoftwareObj);
+                        if (result == 0)
+                        {
+                            modLogging.LogEvent("Detected new software installed: " + SoftwareKeyName, EventLogEntryType.Information, 6051);
+                            result = modDatabase.AddSoftware(SoftwareObj);
+                        }
+                        count++;
                     }
-                    count++;
                 }
+                return "Installed Applications: " + count.ToString();
             }
-            return "Installed Applications: " + count.ToString();
+            catch (Exception err)
+            {
+                modLogging.LogEvent("Unable to get registry information: " + err.Message + "\n\n" + err.StackTrace, EventLogEntryType.Error, 6032);
+                return "Registry error";
+            }
         }
 
         /// <summary>
@@ -51,7 +59,7 @@ namespace XRFAgent
         {
             try
             {
-                RegistryKey currentVersion = Registry.LocalMachine.OpenSubKey("SOFTWARE\\MICROSOFT\\Windows NT\\CurrentVersion");
+                RegistryKey currentVersion = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\MICROSOFT\Windows NT\CurrentVersion");
                 string currentWindowsVersion = currentVersion.GetValue("CurrentMajorVersionNumber").ToString() + "." + currentVersion.GetValue("CurrentMinorVersionNumber").ToString() + "." + currentVersion.GetValue("CurrentBuild").ToString() + "." + currentVersion.GetValue("UBR").ToString();
 
                 string oldWindowsVersion = modDatabase.GetConfig("System_LastKnownWindowsVersion");
@@ -64,7 +72,7 @@ namespace XRFAgent
             }
             catch(Exception err)
             {
-                modLogging.LogEvent("Unable to get registry information: " + err.Message, EventLogEntryType.Error, 6032);
+                modLogging.LogEvent("Unable to get registry information: " + err.Message + "\n\n" + err.StackTrace, EventLogEntryType.Error, 6032);
                 return "Registry error";
             }
         }

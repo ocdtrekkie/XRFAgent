@@ -99,7 +99,7 @@ namespace XRFAgent
             }
             catch (Exception err)
             {
-                modLogging.LogEvent(err.Message, EventLogEntryType.Error, 6002);
+                modLogging.LogEvent(err.Message + "\n\n" + err.StackTrace, EventLogEntryType.Error, 6002);
             }
         }
 
