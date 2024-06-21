@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text.Json;
 using Microsoft.Win32;
 
 namespace XRFAgent
@@ -24,7 +25,7 @@ namespace XRFAgent
                 List<RegistryKey> UninstallKeys = new List<RegistryKey>() { Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"), Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall") };
                 RegistryKey SoftwareKey;
                 string SoftwareKeyName;
-                string NewSoftware = "";
+                string NewSoftware = ""; string NewSoftwareJSON = "{\"newsoftware\":[";
                 int count = 0;
                 int result = 0;
                 modDatabase.InstalledSoftware SoftwareObj;
@@ -43,6 +44,7 @@ namespace XRFAgent
                                 if (result == 0)
                                 {
                                     NewSoftware = NewSoftware + SoftwareKeyName + ", ";
+                                    NewSoftwareJSON = NewSoftwareJSON + JsonSerializer.Serialize(SoftwareObj) + ",";
                                     result = modDatabase.AddSoftware(SoftwareObj);
                                 }
                                 count++;
@@ -53,7 +55,9 @@ namespace XRFAgent
                 if (NewSoftware != "")
                 {
                     NewSoftware = NewSoftware.Substring(0, NewSoftware.Length - 2);
+                    NewSoftwareJSON = NewSoftwareJSON.Substring(0, NewSoftwareJSON.Length - 1) + "]}";
                     modLogging.LogEvent("Detected new software installed: " + NewSoftware, EventLogEntryType.Information, 6051);
+                    modLogging.LogEvent(NewSoftwareJSON, EventLogEntryType.Information, 6051);
                 }
                 return "Installed Applications: " + count.ToString();
             }
