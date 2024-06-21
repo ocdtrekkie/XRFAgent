@@ -18,6 +18,7 @@ namespace XRFAgent
         public static void Load()
         {
             conn = new SQLiteConnection(Properties.Settings.Default.Database_FileURI);
+            conn.ExecuteScalar<int>("PRAGMA journal_mode = WAL;");
             conn.CreateTable<Config>();
             conn.CreateTable<LocalQueue>();
         }
