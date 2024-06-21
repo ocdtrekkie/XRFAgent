@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Win32;
 
@@ -20,26 +21,32 @@ namespace XRFAgent
         {
             try
             {
-                RegistryKey Products = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\MICROSOFT\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Products");
+                List<RegistryKey> UninstallKeys = new List<RegistryKey>() { Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"), Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall") };
                 RegistryKey SoftwareKey;
                 string SoftwareKeyName;
                 int count = 0;
                 int result = 0;
                 modDatabase.InstalledSoftware SoftwareObj;
-                foreach (string ProgramKey in Products.GetSubKeyNames())
+                foreach (RegistryKey UninstallKey in UninstallKeys)
                 {
-                    SoftwareKey = Products.OpenSubKey(ProgramKey).OpenSubKey("InstallProperties");
-                    if (SoftwareKey != null)
+                    foreach (string ProgramKey in UninstallKey.GetSubKeyNames())
                     {
-                        SoftwareKeyName = SoftwareKey.GetValue("DisplayName").ToString();
-                        SoftwareObj = new modDatabase.InstalledSoftware { Name = SoftwareKeyName, Version = SoftwareKey.GetValue("DisplayVersion").ToString(), Publisher = SoftwareKey.GetValue("Publisher").ToString(), InstallDate = SoftwareKey.GetValue("InstallDate").ToString() };
-                        result = modDatabase.UpdateSoftware(SoftwareObj);
-                        if (result == 0)
+                        SoftwareKey = UninstallKey.OpenSubKey(ProgramKey);
+                        if (SoftwareKey != null)
                         {
-                            modLogging.LogEvent("Detected new software installed: " + SoftwareKeyName, EventLogEntryType.Information, 6051);
-                            result = modDatabase.AddSoftware(SoftwareObj);
+                            SoftwareKeyName = SoftwareKey.GetValue("DisplayName")?.ToString() ?? "";
+                            if (SoftwareKeyName != "")
+                            {
+                                SoftwareObj = new modDatabase.InstalledSoftware { Name = SoftwareKeyName, Version = SoftwareKey.GetValue("DisplayVersion")?.ToString() ?? "", Publisher = SoftwareKey.GetValue("Publisher")?.ToString() ?? "", InstallDate = SoftwareKey.GetValue("InstallDate")?.ToString() ?? "" };
+                                result = modDatabase.UpdateSoftware(SoftwareObj);
+                                if (result == 0)
+                                {
+                                    modLogging.LogEvent("Detected new software installed: " + SoftwareKeyName, EventLogEntryType.Information, 6051);
+                                    result = modDatabase.AddSoftware(SoftwareObj);
+                                }
+                                count++;
+                            }
                         }
-                        count++;
                     }
                 }
                 return "Installed Applications: " + count.ToString();
