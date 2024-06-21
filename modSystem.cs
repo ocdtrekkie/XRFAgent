@@ -16,6 +16,33 @@ namespace XRFAgent
         /// </summary>
         public static void Unload() { }
 
+        public static string GetInstalledSoftware()
+        {
+            RegistryKey Products = Registry.LocalMachine.OpenSubKey("SOFTWARE\\MICROSOFT\\Windows\\CurrentVersion\\Installer\\UserData\\S-1-5-18\\Products");
+            RegistryKey SoftwareKey;
+            string SoftwareKeyName;
+            int count = 0;
+            int result = 0;
+            modDatabase.InstalledSoftware SoftwareObj;
+            foreach (string ProgramKey in Products.GetSubKeyNames())
+            {
+                SoftwareKey = Products.OpenSubKey(ProgramKey).OpenSubKey("InstallProperties");
+                if (SoftwareKey != null)
+                {
+                    SoftwareKeyName = SoftwareKey.GetValue("DisplayName").ToString();
+                    SoftwareObj = new modDatabase.InstalledSoftware { Name = SoftwareKeyName, Version = SoftwareKey.GetValue("DisplayVersion").ToString(), Publisher = SoftwareKey.GetValue("Publisher").ToString(), InstallDate = SoftwareKey.GetValue("InstallDate").ToString() };
+                    result = modDatabase.UpdateSoftware(SoftwareObj);
+                    if (result == 0)
+                    {
+                        modLogging.LogEvent("Detected new software installed: " + SoftwareKeyName, EventLogEntryType.Information, 6051);
+                        result = modDatabase.AddSoftware(SoftwareObj);
+                    }
+                    count++;
+                }
+            }
+            return "Installed Applications: " + count.ToString();
+        }
+
         /// <summary>
         /// Gets a full Windows build number from the registry
         /// </summary>

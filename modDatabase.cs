@@ -20,6 +20,7 @@ namespace XRFAgent
             conn = new SQLiteConnection(Properties.Settings.Default.Database_FileURI);
             conn.ExecuteScalar<int>("PRAGMA journal_mode = WAL;");
             conn.CreateTable<Config>();
+            conn.CreateTable<InstalledSoftware>();
             conn.CreateTable<LocalQueue>();
         }
 
@@ -118,6 +119,45 @@ namespace XRFAgent
         public static int EnqueueLocalMessage(LocalQueue localQueue)
         {
             int result = conn.Insert(localQueue);
+            return result;
+        }
+
+        /// <summary>
+        /// Class defining the INSTALLEDSOFTWARE table
+        /// </summary>
+        [Table("INSTALLEDSOFTWARE")]
+        public class InstalledSoftware
+        {
+            [PrimaryKey]
+            public string Name { get; set; }
+
+            public string Version { get; set; }
+
+            public string Publisher { get; set; }
+
+            public string InstallDate { get; set; }
+        }
+
+        /// <summary>
+        /// Adds a new application to the INSTALLEDSOFTWARE table
+        /// </summary>
+        /// <param name="software">(InstalledSoftware) Application to add</param>
+        /// <returns>(int) Number of rows added</returns>
+        public static int AddSoftware(InstalledSoftware software)
+        {
+            int result = conn.Insert(software);
+            return result;
+        }
+
+        /// <summary>
+        /// Updates an existing application in the INSTALLEDSOFTWARE table
+        /// </summary>
+        /// <param name="software">(InstalledSoftware) Application to update</param>
+        /// <returns>(int) Number of rows updated</returns>
+        public static int UpdateSoftware(InstalledSoftware software)
+        {
+            int result = 0;
+            result = conn.Update(software);
             return result;
         }
     }
