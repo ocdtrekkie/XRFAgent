@@ -57,7 +57,8 @@ namespace XRFAgent
         /// <param name="Destination">(string) Intended destination of the message</param>
         /// <param name="MessageType">(string) Type of message being sent</param>
         /// <param name="Message">(string) Contents of message being sent</param>
-        public static async void SendMessage(string Destination, string MessageType, string Message)
+        /// <param name="ExtendedMessage">(string) Contents of extended message data</param>
+        public static async void SendMessage(string Destination, string MessageType, string Message, string ExtendedMessage = "")
         {
             // TODO Only send messages if we are online
             try
@@ -70,6 +71,7 @@ namespace XRFAgent
                 MessageClient.Timeout = httpTimeout;
                 string EncodedCreds = System.Convert.ToBase64String(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes("sandstorm:" + Sync_SandstormToken));
                 MessageBuilder.Headers.Add("Authorization", "Basic " + EncodedCreds);
+                if (ExtendedMessage != "") { MessageBuilder.Content = new StringContent(ExtendedMessage); }
                 HttpResponseMessage MessageResponse = await MessageClient.SendAsync(MessageBuilder);
 
                 if (MessageResponse.IsSuccessStatusCode != true)

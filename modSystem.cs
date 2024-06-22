@@ -57,7 +57,7 @@ namespace XRFAgent
                     NewSoftware = NewSoftware.Substring(0, NewSoftware.Length - 2);
                     NewSoftwareJSON = NewSoftwareJSON.Substring(0, NewSoftwareJSON.Length - 1) + "]}";
                     modLogging.LogEvent("Detected new software installed: " + NewSoftware, EventLogEntryType.Information, 6051);
-                    modLogging.LogEvent(NewSoftwareJSON, EventLogEntryType.Information, 6051);
+                    modSync.SendMessage("server", "nodedata", "newsoftware", NewSoftwareJSON);
                 }
                 return "Installed Applications: " + count.ToString();
             }
