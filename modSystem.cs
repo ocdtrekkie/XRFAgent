@@ -77,7 +77,13 @@ namespace XRFAgent
             try
             {
                 RegistryKey currentVersion = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\MICROSOFT\Windows NT\CurrentVersion");
-                string currentWindowsVersion = currentVersion.GetValue("CurrentMajorVersionNumber").ToString() + "." + currentVersion.GetValue("CurrentMinorVersionNumber").ToString() + "." + currentVersion.GetValue("CurrentBuild").ToString() + "." + currentVersion.GetValue("UBR").ToString();
+                string currentWindowsVersion = "";
+                if (currentVersion.GetValue("CurrentBuild").ToString() == "9600") {
+                    // Temporary support for Windows Server 2012 R2
+                    currentWindowsVersion = "6.3.9600." + "." + currentVersion.GetValue("UBR").ToString();
+                } else {
+                    currentWindowsVersion = currentVersion.GetValue("CurrentMajorVersionNumber").ToString() + "." + currentVersion.GetValue("CurrentMinorVersionNumber").ToString() + "." + currentVersion.GetValue("CurrentBuild").ToString() + "." + currentVersion.GetValue("UBR").ToString();
+                }
 
                 string oldWindowsVersion = modDatabase.GetConfig("System_LastKnownWindowsVersion");
                 if (oldWindowsVersion != currentWindowsVersion)

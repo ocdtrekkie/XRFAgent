@@ -25,12 +25,14 @@ namespace XRFAgent
             if (string.IsNullOrEmpty(Ping_InternetCheckAddress))
             {
                 modDatabase.AddConfig(new modDatabase.Config { Key = "Ping_InternetCheckAddress", Value = "4.2.2.2" });
+                Ping_InternetCheckAddress = "4.2.2.2";
             }
 
             Ping_PublicIPSource = modDatabase.GetConfig("Ping_PublicIPSource");
             if (string.IsNullOrEmpty(Ping_PublicIPSource))
             {
                 modDatabase.AddConfig(new modDatabase.Config { Key = "Ping_PublicIPSource", Value = "dyndns" });
+                Ping_PublicIPSource = "dyndns";
             }
 
             PingTimer = new System.Timers.Timer();
