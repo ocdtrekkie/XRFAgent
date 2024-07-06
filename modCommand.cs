@@ -37,6 +37,8 @@ namespace XRFAgent
                 case "reboot" when inputData.Length == 2:
                 case "restart" when inputData.Length == 2:
                     if (inputData[1] == "host") { outputResponse = modSystem.RebootHost(); } break;
+                case "reset" when inputData.Length == 3:
+                    if (inputData[1] == "installed" && inputData[2] == "software") { outputResponse = modSystem.ResetInstalledSoftware(); } break;
                 case "shutdown" when inputData.Length == 2:
                     if (inputData[1] == "host") { outputResponse = modSystem.ShutdownHost(); } break;
                 case "update" when inputData.Length == 2:

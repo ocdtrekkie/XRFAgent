@@ -18,6 +18,10 @@ namespace XRFAgent
         /// </summary>
         public static void Unload() { }
 
+        /// <summary>
+        /// Collects the list of installed applications, updates the local table, and sends to the server.
+        /// </summary>
+        /// <returns>Result of new applications detected</returns>
         public static string GetInstalledSoftware()
         {
             try
@@ -66,6 +70,17 @@ namespace XRFAgent
                 modLogging.LogEvent("Unable to get registry information: " + err.Message + "\n\n" + err.StackTrace, EventLogEntryType.Error, 6032);
                 return "Registry error";
             }
+        }
+
+        /// <summary>
+        /// Drops the installed software inventory, then gathers an updated version.
+        /// </summary>
+        /// <returns>Result of new applications detected</returns>
+        public static string ResetInstalledSoftware()
+        {
+            modLogging.LogEvent("Reset installed software inventory.", EventLogEntryType.Information, 6052);
+            modDatabase.TruncateSoftware();
+            return GetInstalledSoftware();
         }
 
         /// <summary>

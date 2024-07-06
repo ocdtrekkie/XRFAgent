@@ -160,5 +160,13 @@ namespace XRFAgent
             result = conn.Update(software);
             return result;
         }
+
+        /// <summary>
+        /// Dumps the current contents of the INSTALLEDSOFTWARE table
+        /// </summary>
+        public static void TruncateSoftware()
+        {
+            conn.DeleteAll<InstalledSoftware>();
+        }
     }
 }

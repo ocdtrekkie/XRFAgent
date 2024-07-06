@@ -13,3 +13,4 @@
 6032 - Registry access error
 
 6051 - Detected new software installed (informational)
+6052 - Truncated installed software inventory (informational)
