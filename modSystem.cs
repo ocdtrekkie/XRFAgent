@@ -93,11 +93,13 @@ namespace XRFAgent
             {
                 RegistryKey currentVersion = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\MICROSOFT\Windows NT\CurrentVersion");
                 string currentWindowsVersion = currentVersion.GetValue("CurrentMajorVersionNumber").ToString() + "." + currentVersion.GetValue("CurrentMinorVersionNumber").ToString() + "." + currentVersion.GetValue("CurrentBuild").ToString() + "." + currentVersion.GetValue("UBR").ToString();
+                string productName = currentVersion.GetValue("ProductName").ToString();
 
                 string oldWindowsVersion = modDatabase.GetConfig("System_LastKnownWindowsVersion");
                 if (oldWindowsVersion != currentWindowsVersion)
                 {
                     modDatabase.AddOrUpdateConfig(new modDatabase.Config { Key = "System_LastKnownWindowsVersion", Value = currentWindowsVersion });
+                    modDatabase.AddOrUpdateConfig(new modDatabase.Config { Key = "System_OSProductName", Value = productName });
                 }
 
                 return currentWindowsVersion;
