@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.Json;
+using Microsoft.VisualBasic.Devices;
 using Microsoft.Win32;
 
 namespace XRFAgent
@@ -81,6 +82,44 @@ namespace XRFAgent
             modLogging.LogEvent("Reset installed software inventory.", EventLogEntryType.Information, 6052);
             modDatabase.TruncateSoftware();
             return GetInstalledSoftware();
+        }
+
+        /// <summary>
+        /// Collects some general system information
+        /// </summary>
+        /// <returns>(string) Result</returns>
+        public static string GetSystemDetails()
+        {
+            try
+            {
+                RegistryKey systemHardware = Registry.LocalMachine.OpenSubKey(@"HARDWARE\DESCRIPTION\System\BIOS");
+                string moboManufacturer = systemHardware.GetValue("BaseBoardManufacturer").ToString();
+                modLogging.LogEvent("Mobo Manufacturer: " + moboManufacturer, EventLogEntryType.Information, 9999);
+                string moboProduct = systemHardware.GetValue("BaseBoardProduct").ToString();
+                modLogging.LogEvent("Mobo Product: " + moboProduct, EventLogEntryType.Information, 9999);
+                string compManufacturer = systemHardware.GetValue("SystemManufacturer").ToString();
+                modLogging.LogEvent("CSys Manufacturer: " + compManufacturer, EventLogEntryType.Information, 9999);
+                string compModel = systemHardware.GetValue("SystemProductName").ToString();
+                modLogging.LogEvent("CSys Model: " + compModel, EventLogEntryType.Information, 9999);
+
+                RegistryKey systemCPU = Registry.LocalMachine.OpenSubKey(@"HARDWARE\DESCRIPTION\System\CentralProcessor\0");
+                string processorName = systemCPU.GetValue("ProcessorNameString").ToString();
+                modLogging.LogEvent("Proc Name: " + processorName, EventLogEntryType.Information, 9999);
+                ComputerInfo VBCI = new ComputerInfo();
+                string physicalMemory = VBCI.TotalPhysicalMemory.ToString();
+                modLogging.LogEvent("Phys Memory: " + physicalMemory, EventLogEntryType.Information, 9999);
+
+                string machineName = Environment.MachineName.ToString();
+                int uptimeMilliseconds = Environment.TickCount;
+                string logicalDrives = String.Join(", ", Environment.GetLogicalDrives()).TrimEnd(',', ' ');
+
+                return "System details in event log";
+            }
+            catch (Exception err)
+            {
+                modLogging.LogEvent("Unable to get registry information: " + err.Message + "\n\n" + err.StackTrace, EventLogEntryType.Error, 6032);
+                return "Registry error";
+            }
         }
 
         /// <summary>

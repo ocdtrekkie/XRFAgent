@@ -27,7 +27,8 @@ namespace XRFAgent
             switch (inputData[0])
             {
                 case "check" when inputData.Length == 3:
-                    if (inputData[1] == "installed" && inputData[2] == "software") { outputResponse = modSystem.GetInstalledSoftware(); } break;
+                    if (inputData[1] == "installed" && inputData[2] == "software") { outputResponse = modSystem.GetInstalledSoftware(); }
+                    else if (inputData[1] == "system" && inputData[2] == "details") { outputResponse = modSystem.GetSystemDetails(); } break;
                 case "hac":
                 case "hacontroller":
                     string inputCommandTrimmed = inputCommand.Remove(0, inputData[0].Length + 1);
