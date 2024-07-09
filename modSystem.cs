@@ -96,7 +96,7 @@ namespace XRFAgent
                 string SystemDetailsJSON = "{\"systemdetails\":[";
                 modDatabase.Config ConfigObj;
 
-                ConfigObj = new modDatabase.Config { Key = "System_Hostname", Value = Environment.MachineName.ToString() };
+                ConfigObj = new modDatabase.Config { Key = "System_Hostname", Value = Environment.MachineName };
                 modDatabase.AddOrUpdateConfig(ConfigObj);
                 SystemDetailsJSON = SystemDetailsJSON + JsonSerializer.Serialize(ConfigObj) + ",";
 
@@ -128,25 +128,34 @@ namespace XRFAgent
                 modDatabase.AddOrUpdateConfig(ConfigObj);
                 SystemDetailsJSON = SystemDetailsJSON + JsonSerializer.Serialize(ConfigObj) + ",";
 
-                SystemDetailsJSON = SystemDetailsJSON.Substring(0, SystemDetailsJSON.Length - 1) + "]}";
-                modLogging.LogEvent(SystemDetailsJSON, EventLogEntryType.Information, 9999);
-
-                int uptimeMilliseconds = Environment.TickCount;
-
                 DriveInfo[] allDrives = DriveInfo.GetDrives();
+                string dLetter;
                 foreach (DriveInfo d in allDrives)
                 {
-                    if (d.IsReady == true)
+                    dLetter = d.Name.Substring(0, 1);
+                    ConfigObj = new modDatabase.Config { Key = "System_Drive_" + dLetter + "_Type", Value = d.DriveType.ToString() };
+                    modDatabase.AddOrUpdateConfig(ConfigObj);
+                    SystemDetailsJSON = SystemDetailsJSON + JsonSerializer.Serialize(ConfigObj) + ",";
+                    if (d.IsReady == true && d.DriveType == DriveType.Fixed)
                     {
-                        modLogging.LogEvent(d.Name + " Label: " + d.VolumeLabel + " Type: " + d.DriveType + " Free: " + d.TotalFreeSpace + " Total: " + d.TotalSize, EventLogEntryType.Information, 9999);
-                    } else
-                    {
-                        modLogging.LogEvent(d.Name + " Type: " + d.DriveType, EventLogEntryType.Information, 9999);
+                        ConfigObj = new modDatabase.Config { Key = "System_Drive_" + dLetter + "_Label", Value = d.VolumeLabel };
+                        modDatabase.AddOrUpdateConfig(ConfigObj);
+                        SystemDetailsJSON = SystemDetailsJSON + JsonSerializer.Serialize(ConfigObj) + ",";
+
+                        ConfigObj = new modDatabase.Config { Key = "System_Drive_" + dLetter + "_TotalSize", Value = d.TotalSize.ToString() };
+                        modDatabase.AddOrUpdateConfig(ConfigObj);
+                        SystemDetailsJSON = SystemDetailsJSON + JsonSerializer.Serialize(ConfigObj) + ",";
+
+                        ConfigObj = new modDatabase.Config { Key = "System_Drive_" + dLetter + "_TotalFreeSpace", Value = d.TotalFreeSpace.ToString() };
+                        modDatabase.AddOrUpdateConfig(ConfigObj);
+                        SystemDetailsJSON = SystemDetailsJSON + JsonSerializer.Serialize(ConfigObj) + ",";
                     }
-                    
                 }
 
-                return "System details in event log";
+                SystemDetailsJSON = SystemDetailsJSON.Substring(0, SystemDetailsJSON.Length - 1) + "]}";
+                modSync.SendMessage("server", "nodedata", "systemdetails", SystemDetailsJSON);
+
+                return "System details updated";
             }
             catch (Exception err)
             {
