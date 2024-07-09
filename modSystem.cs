@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Text.Json;
 using Microsoft.VisualBasic.Devices;
 using Microsoft.Win32;
@@ -111,7 +112,19 @@ namespace XRFAgent
 
                 string machineName = Environment.MachineName.ToString();
                 int uptimeMilliseconds = Environment.TickCount;
-                string logicalDrives = String.Join(", ", Environment.GetLogicalDrives()).TrimEnd(',', ' ');
+
+                DriveInfo[] allDrives = DriveInfo.GetDrives();
+                foreach (DriveInfo d in allDrives)
+                {
+                    if (d.IsReady == true)
+                    {
+                        modLogging.LogEvent(d.Name + " Label: " + d.VolumeLabel + " Type: " + d.DriveType + " Free: " + d.TotalFreeSpace + " Total: " + d.TotalSize, EventLogEntryType.Information, 9999);
+                    } else
+                    {
+                        modLogging.LogEvent(d.Name + " Type: " + d.DriveType, EventLogEntryType.Information, 9999);
+                    }
+                    
+                }
 
                 return "System details in event log";
             }
