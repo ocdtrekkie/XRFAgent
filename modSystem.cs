@@ -93,24 +93,44 @@ namespace XRFAgent
         {
             try
             {
+                string SystemDetailsJSON = "{\"systemdetails\":[";
+                modDatabase.Config ConfigObj;
+
+                ConfigObj = new modDatabase.Config { Key = "System_Hostname", Value = Environment.MachineName.ToString() };
+                modDatabase.AddOrUpdateConfig(ConfigObj);
+                SystemDetailsJSON = SystemDetailsJSON + JsonSerializer.Serialize(ConfigObj) + ",";
+
                 RegistryKey systemHardware = Registry.LocalMachine.OpenSubKey(@"HARDWARE\DESCRIPTION\System\BIOS");
-                string moboManufacturer = systemHardware.GetValue("BaseBoardManufacturer").ToString();
-                modLogging.LogEvent("Mobo Manufacturer: " + moboManufacturer, EventLogEntryType.Information, 9999);
-                string moboProduct = systemHardware.GetValue("BaseBoardProduct").ToString();
-                modLogging.LogEvent("Mobo Product: " + moboProduct, EventLogEntryType.Information, 9999);
-                string compManufacturer = systemHardware.GetValue("SystemManufacturer").ToString();
-                modLogging.LogEvent("CSys Manufacturer: " + compManufacturer, EventLogEntryType.Information, 9999);
-                string compModel = systemHardware.GetValue("SystemProductName").ToString();
-                modLogging.LogEvent("CSys Model: " + compModel, EventLogEntryType.Information, 9999);
+
+                ConfigObj = new modDatabase.Config { Key = "System_BaseBoardManufacturer", Value = systemHardware.GetValue("BaseBoardManufacturer").ToString() };
+                modDatabase.AddOrUpdateConfig(ConfigObj);
+                SystemDetailsJSON = SystemDetailsJSON + JsonSerializer.Serialize(ConfigObj) + ",";
+
+                ConfigObj = new modDatabase.Config { Key = "System_BaseBoardProduct", Value = systemHardware.GetValue("BaseBoardProduct").ToString() };
+                modDatabase.AddOrUpdateConfig(ConfigObj);
+                SystemDetailsJSON = SystemDetailsJSON + JsonSerializer.Serialize(ConfigObj) + ",";
+
+                ConfigObj = new modDatabase.Config { Key = "System_SystemManufacturer", Value = systemHardware.GetValue("SystemManufacturer").ToString() };
+                modDatabase.AddOrUpdateConfig(ConfigObj);
+                SystemDetailsJSON = SystemDetailsJSON + JsonSerializer.Serialize(ConfigObj) + ",";
+
+                ConfigObj = new modDatabase.Config { Key = "System_SystemProductName", Value = systemHardware.GetValue("SystemProductName").ToString() };
+                modDatabase.AddOrUpdateConfig(ConfigObj);
+                SystemDetailsJSON = SystemDetailsJSON + JsonSerializer.Serialize(ConfigObj) + ",";
 
                 RegistryKey systemCPU = Registry.LocalMachine.OpenSubKey(@"HARDWARE\DESCRIPTION\System\CentralProcessor\0");
-                string processorName = systemCPU.GetValue("ProcessorNameString").ToString();
-                modLogging.LogEvent("Proc Name: " + processorName, EventLogEntryType.Information, 9999);
-                ComputerInfo VBCI = new ComputerInfo();
-                string physicalMemory = VBCI.TotalPhysicalMemory.ToString();
-                modLogging.LogEvent("Phys Memory: " + physicalMemory, EventLogEntryType.Information, 9999);
+                ConfigObj = new modDatabase.Config { Key = "System_ProcessorName", Value = systemCPU.GetValue("ProcessorNameString").ToString() };
+                modDatabase.AddOrUpdateConfig(ConfigObj);
+                SystemDetailsJSON = SystemDetailsJSON + JsonSerializer.Serialize(ConfigObj) + ",";
 
-                string machineName = Environment.MachineName.ToString();
+                ComputerInfo VBCI = new ComputerInfo();
+                ConfigObj = new modDatabase.Config { Key = "System_TotalPhysicalMemory", Value = VBCI.TotalPhysicalMemory.ToString() };
+                modDatabase.AddOrUpdateConfig(ConfigObj);
+                SystemDetailsJSON = SystemDetailsJSON + JsonSerializer.Serialize(ConfigObj) + ",";
+
+                SystemDetailsJSON = SystemDetailsJSON.Substring(0, SystemDetailsJSON.Length - 1) + "]}";
+                modLogging.LogEvent(SystemDetailsJSON, EventLogEntryType.Information, 9999);
+
                 int uptimeMilliseconds = Environment.TickCount;
 
                 DriveInfo[] allDrives = DriveInfo.GetDrives();
