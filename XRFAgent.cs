@@ -36,9 +36,9 @@ namespace XRFAgent
             modUpdate.CheckVersion();
             modDatabase.Load();
             modLogging.LogEvent("Database connected", EventLogEntryType.Information);
-            modSystem.GetWindowsVersion();
             modNetwork.Load();
             modSync.Load();
+            modSystem.GetSystemDetails();
 
             LoadTime.Stop();
             modLogging.LogEvent("XRFAgent started in " + LoadTime.Elapsed.Milliseconds + " ms", EventLogEntryType.Information);
