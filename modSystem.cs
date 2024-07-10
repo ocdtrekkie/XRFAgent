@@ -216,5 +216,26 @@ namespace XRFAgent
                 return "Shutdown failed";
             }
         }
+
+        /// <summary>
+        /// Configures the system Run dialog, which is frequently used by phone scammers
+        /// </summary>
+        /// <param name="action">(string) Action to take</param>
+        /// <returns>(string) Response</returns>
+        public static string ConfigureRunDialog(string action)
+        {
+            int newvalue = 0;
+            if (action == "disable") { newvalue = 1; }
+            RegistryKey explorerPolicies = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer", true);
+            explorerPolicies.SetValue("NoRun", newvalue, RegistryValueKind.DWord);
+            explorerPolicies.Close();
+
+            modDatabase.Config ConfigObj = new modDatabase.Config { Key = "Security_RunDialog", Value = action + "d" };
+            modDatabase.AddOrUpdateConfig(ConfigObj);
+            string SystemDetailsJSON = "{\"systemdetails\":[" + JsonSerializer.Serialize(ConfigObj) + "]}";
+            modSync.SendMessage("server", "nodedata", "systemdetails", SystemDetailsJSON);
+
+            return "Run dialog " + action + "d";
+        }
     }
 }

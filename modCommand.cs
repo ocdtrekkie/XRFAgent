@@ -30,9 +30,11 @@ namespace XRFAgent
                     if (inputData[1] == "installed" && inputData[2] == "software") { outputResponse = modSystem.GetInstalledSoftware(); }
                     else if (inputData[1] == "system" && inputData[2] == "details") { outputResponse = modSystem.GetSystemDetails(); } break;
                 case "disable" when inputData.Length == 2:
-                    if (inputData[1] == "autoupdate") { outputResponse = modUpdate.DisableAutoupdate(); } break;
+                    if (inputData[1] == "autoupdate") { outputResponse = modUpdate.DisableAutoupdate(); }
+                    if (inputData[1] == "rundialog") { outputResponse = modSystem.ConfigureRunDialog(inputData[0]); } break;
                 case "enable" when inputData.Length == 2:
-                    if (inputData[1] == "autoupdate") { outputResponse = modUpdate.EnableAutoupdate(); } break;
+                    if (inputData[1] == "autoupdate") { outputResponse = modUpdate.EnableAutoupdate(); }
+                    if (inputData[1] == "rundialog") { outputResponse = modSystem.ConfigureRunDialog(inputData[0]); } break;
                 case "hac":
                 case "hacontroller":
                     string inputCommandTrimmed = inputCommand.Remove(0, inputData[0].Length + 1);
