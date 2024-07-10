@@ -162,6 +162,13 @@ namespace XRFAgent
                     }
                 }
 
+                if (File.Exists(@"C:\HAC\HAController.exe"))
+                {
+                    ConfigObj = new modDatabase.Config { Key = "HAController_Version", Value = FileVersionInfo.GetVersionInfo(@"C:\HAC\HAController.exe").FileVersion };
+                    modDatabase.AddOrUpdateConfig(ConfigObj);
+                    SystemDetailsJSON = SystemDetailsJSON + JsonSerializer.Serialize(ConfigObj) + ",";
+                }
+
                 SystemDetailsJSON = SystemDetailsJSON.Substring(0, SystemDetailsJSON.Length - 1) + "]}";
                 modSync.SendMessage("server", "nodedata", "systemdetails", SystemDetailsJSON);
 
