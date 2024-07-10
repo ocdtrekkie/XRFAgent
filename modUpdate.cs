@@ -70,6 +70,7 @@ namespace XRFAgent
             int updateNeeded = CheckVersion();
             if (updateNeeded >= 1)
             {
+                modLogging.LogEvent("Updating agent", EventLogEntryType.Information, 6023);
                 try
                 {
                     try
@@ -95,6 +96,29 @@ namespace XRFAgent
                 }
             }
             return updateNeeded;
+        }
+
+        public static int Autoupdate()
+        {
+            if (modDatabase.GetConfig("Update_Autoupdate") == "true")
+            {
+                return UpdateAgent();
+            } else
+            {
+                return CheckVersion();
+            }
+        }
+
+        public static string DisableAutoupdate()
+        {
+            modDatabase.AddOrUpdateConfig(new modDatabase.Config { Key = "Update_Autoupdate", Value = "false" });
+            return "Autoupdate disabled";
+        }
+
+        public static string EnableAutoupdate()
+        {
+            modDatabase.AddOrUpdateConfig(new modDatabase.Config { Key = "Update_Autoupdate", Value = "true" });
+            return "Autoupdate enabled";
         }
     }
 }

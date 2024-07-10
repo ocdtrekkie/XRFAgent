@@ -8,6 +8,7 @@
 
 6021 - Update check failed
 6022 - Update failed
+6023 - Update starting (informational)
 
 6031 - External process start error
 6032 - Registry access error
