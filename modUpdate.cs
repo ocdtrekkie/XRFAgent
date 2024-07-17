@@ -82,6 +82,7 @@ namespace XRFAgent
                     string UpdateFile = "agent" + updateNeeded.ToString() + ".zip";
                     UpdateDownloadClient.DownloadFile(Properties.Settings.Default.Update_SourceURI + UpdateFile, Properties.Settings.Default.Scripts_FolderURI + UpdateFile);
                     ZipFile.ExtractToDirectory(Properties.Settings.Default.Scripts_FolderURI + UpdateFile, Properties.Settings.Default.Scripts_FolderURI + "agenttemp");
+                    File.Delete(Properties.Settings.Default.Scripts_FolderURI + UpdateFile);
                     File.Copy(Properties.Settings.Default.Scripts_FolderURI + @"agenttemp\agentupdate.bat", Properties.Settings.Default.Scripts_FolderURI + "agentupdate.bat", true);
                     Process UpdateRunner = new Process();
                     UpdateRunner.StartInfo.UseShellExecute = true;
