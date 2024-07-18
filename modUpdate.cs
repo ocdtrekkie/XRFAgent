@@ -101,7 +101,7 @@ namespace XRFAgent
 
         public static int Autoupdate()
         {
-            if (modDatabase.GetConfig("Update_Autoupdate") == "true")
+            if (modDatabase.GetConfig("Update_Autoupdate") == "enabled")
             {
                 return UpdateAgent();
             } else
@@ -112,13 +112,13 @@ namespace XRFAgent
 
         public static string DisableAutoupdate()
         {
-            modDatabase.AddOrUpdateConfig(new modDatabase.Config { Key = "Update_Autoupdate", Value = "false" });
+            modSync.SendSingleConfig("Update_Autoupdate", "disabled");
             return "Autoupdate disabled";
         }
 
         public static string EnableAutoupdate()
         {
-            modDatabase.AddOrUpdateConfig(new modDatabase.Config { Key = "Update_Autoupdate", Value = "true" });
+            modSync.SendSingleConfig("Update_Autoupdate", "enabled");
             return "Autoupdate enabled";
         }
     }

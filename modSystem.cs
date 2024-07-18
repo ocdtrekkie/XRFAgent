@@ -220,7 +220,7 @@ namespace XRFAgent
         /// <summary>
         /// Configures the system Run dialog, which is frequently used by phone scammers
         /// </summary>
-        /// <param name="action">(string) Action to take</param>
+        /// <param name="action">(string) "enable" or "disable"</param>
         /// <returns>(string) Response</returns>
         public static string ConfigureRunDialog(string action)
         {
@@ -230,11 +230,7 @@ namespace XRFAgent
             explorerPolicies.SetValue("NoRun", newvalue, RegistryValueKind.DWord);
             explorerPolicies.Close();
 
-            modDatabase.Config ConfigObj = new modDatabase.Config { Key = "Security_RunDialog", Value = action + "d" };
-            modDatabase.AddOrUpdateConfig(ConfigObj);
-            string SystemDetailsJSON = "{\"systemdetails\":[" + JsonSerializer.Serialize(ConfigObj) + "]}";
-            modSync.SendMessage("server", "nodedata", "systemdetails", SystemDetailsJSON);
-
+            modSync.SendSingleConfig("Security_RunDialog", action + "d");
             return "Run dialog " + action + "d";
         }
     }

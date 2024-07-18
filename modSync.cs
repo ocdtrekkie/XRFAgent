@@ -106,6 +106,21 @@ namespace XRFAgent
         }
 
         /// <summary>
+        /// Stores and sends to the server a single configuration value
+        /// </summary>
+        /// <param name="configkey">Key</param>
+        /// <param name="configvalue">Value</param>
+        /// <returns>(int) 0</returns>
+        public static int SendSingleConfig(string configkey, string configvalue)
+        {
+            modDatabase.Config ConfigObj = new modDatabase.Config { Key = configkey, Value = configvalue };
+            modDatabase.AddOrUpdateConfig(ConfigObj);
+            string SystemDetailsJSON = "{\"systemdetails\":[" + JsonSerializer.Serialize(ConfigObj) + "]}";
+            modSync.SendMessage("server", "nodedata", "systemdetails", SystemDetailsJSON);
+            return 0;
+        }
+
+        /// <summary>
         /// Handler to launch initial heartbeat on a new Thread
         /// </summary>
         private static void InitialHeartbeatHandler()
