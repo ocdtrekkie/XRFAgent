@@ -7,3 +7,7 @@ XRF Agent for Windows is a remote monitoring and management (RMM) service which 
 * Basic system configuration details
 * Installed software monitoring
 * Security configuration patching
+
+## Installation
+
+The easiest way to install XRF Agent is the [XRF Agent Configuration Tool](https://github.com/ocdtrekkie/XRFAgentConfig).
