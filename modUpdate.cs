@@ -99,6 +99,23 @@ namespace XRFAgent
             return updateNeeded;
         }
 
+        public static int InstallWindowsUpdatePush()
+        {
+            try
+            {
+                Directory.CreateDirectory(Properties.Settings.Default.Tools_FolderURI);
+                UpdateDownloadClient.DownloadFile(Properties.Settings.Default.Update_SourceURI + "windowsupdatepush.zip", Properties.Settings.Default.Tools_FolderURI + "windowsupdatepush.zip");
+                ZipFile.ExtractToDirectory(Properties.Settings.Default.Tools_FolderURI + "windowsupdatepush.zip", Properties.Settings.Default.Tools_FolderURI);
+                File.Delete(Properties.Settings.Default.Tools_FolderURI + "windowsupdatepush.zip");
+                return 0;
+            }
+            catch (Exception err)
+            {
+                modLogging.LogEvent(err.Message, EventLogEntryType.Error, 6024);
+                return -1;
+            }
+        }
+
         public static int Autoupdate()
         {
             if (modDatabase.GetConfig("Update_Autoupdate") == "enabled")

@@ -181,6 +181,35 @@ namespace XRFAgent
             }
         }
 
+        public static int InstallWindowsUpdates()
+        {
+            try
+            {
+                if (File.Exists(Properties.Settings.Default.Tools_FolderURI + "WindowsUpdatePush.exe") == false)
+                {
+                    int installResult = modUpdate.InstallWindowsUpdatePush();
+                    if (installResult == -1)
+                    {
+                        return -1;
+                    }
+                }
+                Process UpdateRunner = new Process();
+                UpdateRunner.StartInfo.UseShellExecute = false;
+                UpdateRunner.StartInfo.RedirectStandardOutput = true;
+                UpdateRunner.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                UpdateRunner.StartInfo.FileName = Properties.Settings.Default.Tools_FolderURI + "WindowsUpdatePush.exe";
+                UpdateRunner.Start();
+                UpdateRunner.WaitForExit();
+                modLogging.LogEvent(UpdateRunner.StandardOutput.ReadToEnd(), EventLogEntryType.Information, 6042);
+                return UpdateRunner.ExitCode;
+            }
+            catch(Exception err)
+            {
+                modLogging.LogEvent("Windows Update error: " + err.Message, EventLogEntryType.Error, 6041);
+                return -1;
+            }
+        }
+
         /// <summary>
         /// Reboots the host computer
         /// </summary>

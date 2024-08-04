@@ -63,6 +63,21 @@ namespace XRFAgent
                                     outputResponse = "Updating"; break;
                             }
                             break;
+                        case "windows":
+                            result = modSystem.InstallWindowsUpdates();
+                            switch (result)
+                            {
+                                case 0:
+                                    outputResponse = "Update successful"; break;
+                                case -1:
+                                case 31:
+                                    outputResponse = "Update error"; break;
+                                case 3010:
+                                    outputResponse = "Reboot required"; break;
+                                default:
+                                    outputResponse = "Updating"; break;
+                            }
+                            break;
                         default: break;
                     }
                     break;

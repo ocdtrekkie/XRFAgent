@@ -11,5 +11,8 @@
     <Setting Name="Scripts_FolderURI" Type="System.String" Scope="Application">
       <Value Profile="(Default)">C:\HAC\scripts\</Value>
     </Setting>
+    <Setting Name="Tools_FolderURI" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">C:\Program Files\XRFAgent\tools\</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
