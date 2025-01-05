@@ -19,3 +19,5 @@
 
 6051 - Detected new software installed (informational)
 6052 - Truncated installed software inventory (informational)
+
+6061 - Detected disk error

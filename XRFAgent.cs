@@ -39,6 +39,7 @@ namespace XRFAgent
             modNetwork.Load();
             modSync.Load();
             modSystem.GetSystemDetails();
+            modSystem.AttachEventWatcher();
 
             LoadTime.Stop();
             modLogging.LogEvent("XRFAgent started in " + LoadTime.Elapsed.Milliseconds + " ms", EventLogEntryType.Information);

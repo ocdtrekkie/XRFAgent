@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Text.Json;
 using Microsoft.VisualBasic.Devices;
@@ -19,6 +20,20 @@ namespace XRFAgent
         /// Unloading the system module is NOT NEEDED
         /// </summary>
         public static void Unload() { }
+
+        public static void AttachEventWatcher()
+        {
+            EventLogQuery logQuery = new EventLogQuery("System", PathType.LogName, "*[System[Provider[@Name='disk'] and (EventID=7 or EventID=11 or EventID=25 or EventID=26 or EventID=51 or EventID=55)]]");
+            EventLogWatcher logWatcher = new EventLogWatcher(logQuery);
+            logWatcher.EventRecordWritten += new EventHandler<EventRecordWrittenEventArgs>(EventWritten);
+            logWatcher.Enabled = true;
+        }
+
+        private static void EventWritten(Object obj, EventRecordWrittenEventArgs arg)
+        {
+            modLogging.LogEvent("Detected disk issue", EventLogEntryType.Error, 6061);
+            modSync.SendSingleConfig("Alert_DiskFailure", "reported");
+        }
 
         /// <summary>
         /// Collects the list of installed applications, updates the local table, and sends to the server.
