@@ -39,6 +39,7 @@ namespace XRFAgent
             modNetwork.Load();
             modSync.Load();
             modSystem.GetSystemDetails();
+            modSystem.GetInstalledSoftware();
             modSystem.AttachEventWatcher();
 
             LoadTime.Stop();
