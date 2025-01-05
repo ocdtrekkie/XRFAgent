@@ -31,7 +31,8 @@ namespace XRFAgent
                     else if (inputData[1] == "system" && inputData[2] == "details") { outputResponse = modSystem.GetSystemDetails(); } break;
                 case "disable" when inputData.Length == 2:
                     if (inputData[1] == "autoupdate") { outputResponse = modUpdate.DisableAutoupdate(); }
-                    if (inputData[1] == "rundialog") { outputResponse = modSystem.ConfigureRunDialog(inputData[0]); } break;
+                    if (inputData[1] == "rundialog") { outputResponse = modSystem.ConfigureRunDialog(inputData[0]); }
+                    if (inputData[1] == "webnotifications") { outputResponse = modSystem.DisableWebNotifications(); } break;
                 case "enable" when inputData.Length == 2:
                     if (inputData[1] == "autoupdate") { outputResponse = modUpdate.EnableAutoupdate(); }
                     if (inputData[1] == "rundialog") { outputResponse = modSystem.ConfigureRunDialog(inputData[0]); } break;

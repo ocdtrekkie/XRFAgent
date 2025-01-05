@@ -277,5 +277,22 @@ namespace XRFAgent
             modSync.SendSingleConfig("Security_RunDialog", action + "d");
             return "Run dialog " + action + "d";
         }
+
+        /// <summary>
+        /// Disables the browser Notifications API on Chrome, Edge, and Firefox
+        /// </summary>
+        /// <returns>(string) Response</returns>
+        public static string DisableWebNotifications()
+        {
+            RegistryKey chromePolicies = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Google\Chrome", true);
+            chromePolicies.SetValue("DefaultNotificationsSetting", 2, RegistryValueKind.DWord);
+            RegistryKey edgePolicies = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Microsoft\Edge", true);
+            edgePolicies.SetValue("DefaultNotificationsSetting", 2, RegistryValueKind.DWord);
+            RegistryKey firefoxPolicies = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Mozilla\Firefox\Permissions\Notifications", true);
+            firefoxPolicies.SetValue("BlockNewRequests", 1, RegistryValueKind.DWord);
+
+            modSync.SendSingleConfig("Security_WebNotifications", "disabled");
+            return "Browser notifications disabled";
+        }
     }
 }
