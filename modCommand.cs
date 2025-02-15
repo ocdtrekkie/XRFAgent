@@ -32,6 +32,7 @@ namespace XRFAgent
                 case "disable" when inputData.Length == 2:
                     if (inputData[1] == "autoupdate") { outputResponse = modUpdate.DisableAutoupdate(); }
                     if (inputData[1] == "rundialog") { outputResponse = modSystem.ConfigureRunDialog(inputData[0]); }
+                    if (inputData[1] == "webextensions") { outputResponse = modSystem.DisableWebExtensions(); }
                     if (inputData[1] == "webnotifications") { outputResponse = modSystem.DisableWebNotifications(); } break;
                 case "enable" when inputData.Length == 2:
                     if (inputData[1] == "autoupdate") { outputResponse = modUpdate.EnableAutoupdate(); }

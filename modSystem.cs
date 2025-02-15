@@ -279,6 +279,26 @@ namespace XRFAgent
         }
 
         /// <summary>
+        /// Disables installing or using any browser extensions on Chrome, Edge, and Firefox
+        /// but permits uBlock Origin, Privacy Badger, and Facebook Container on Firefox
+        /// </summary>
+        /// <returns></returns>
+
+        public static string DisableWebExtensions()
+        {
+            RegistryKey chromeExtensions = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Google\Chrome\ExtensionInstallBlocklist", true);
+            chromeExtensions.SetValue("1", "*", RegistryValueKind.String);
+            RegistryKey edgeExtensions = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Microsoft\Edge\ExtensionInstallBlocklist", true);
+            edgeExtensions.SetValue("1", "*", RegistryValueKind.String);
+            RegistryKey firefoxExtensions = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Mozilla\Firefox", true);
+            string[] firefoxExtensionPolicy = {"{", "  \"*\":{", "    \"blocked_install_message\": \"Unapproved extensions are not permitted.\",", "    \"install_sources\": [\"about:addons\",\"https://addons.mozilla.org/\"],", "    \"installation_mode\": \"blocked\",", "    \"allowed_types\": [\"extension\"]", "  },", "  \"uBlock0@raymondhill.net\":{", "    \"installation_mode\": \"allowed\"", "  },", "  \"jid1-MnnxcxisBPnSXQ@jetpack\":{", "    \"installation_mode\": \"allowed\"", "  },", "  \"@contain-facebook\":{", "    \"installation_mode\": \"allowed\"", "  }", "}" };
+            firefoxExtensions.SetValue("ExtensionSettings2", firefoxExtensionPolicy, RegistryValueKind.MultiString);
+
+            modSync.SendSingleConfig("Security_WebExtensions", "disabled");
+            return "Browser extensions disabled";
+        }
+
+        /// <summary>
         /// Disables the browser Notifications API on Chrome, Edge, and Firefox
         /// </summary>
         /// <returns>(string) Response</returns>
