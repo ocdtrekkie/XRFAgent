@@ -292,7 +292,7 @@ namespace XRFAgent
             edgeExtensions.SetValue("1", "*", RegistryValueKind.String);
             RegistryKey firefoxExtensions = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Mozilla\Firefox", true);
             string[] firefoxExtensionPolicy = {"{", "  \"*\":{", "    \"blocked_install_message\": \"Unapproved extensions are not permitted.\",", "    \"install_sources\": [\"about:addons\",\"https://addons.mozilla.org/\"],", "    \"installation_mode\": \"blocked\",", "    \"allowed_types\": [\"extension\"]", "  },", "  \"uBlock0@raymondhill.net\":{", "    \"installation_mode\": \"allowed\"", "  },", "  \"jid1-MnnxcxisBPnSXQ@jetpack\":{", "    \"installation_mode\": \"allowed\"", "  },", "  \"@contain-facebook\":{", "    \"installation_mode\": \"allowed\"", "  }", "}" };
-            firefoxExtensions.SetValue("ExtensionSettings2", firefoxExtensionPolicy, RegistryValueKind.MultiString);
+            firefoxExtensions.SetValue("ExtensionSettings", firefoxExtensionPolicy, RegistryValueKind.MultiString);
 
             modSync.SendSingleConfig("Security_WebExtensions", "disabled");
             return "Browser extensions disabled";
