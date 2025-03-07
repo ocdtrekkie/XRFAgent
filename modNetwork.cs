@@ -83,7 +83,7 @@ namespace XRFAgent
                     string oldLocalIP = modDatabase.GetConfig("Ping_LastKnownLocalIP");
                     if (oldLocalIP != newLocalIP)
                     {
-                        modLogging.LogEvent("Local IP address changed from " + oldLocalIP + " to " + newLocalIP, EventLogEntryType.Warning);
+                        modLogging.LogEvent("Local IP address changed from " + oldLocalIP + " to " + newLocalIP, EventLogEntryType.Warning, 6014);
                         modDatabase.AddOrUpdateConfig(new modDatabase.Config { Key = "Ping_LastKnownLocalIP", Value = newLocalIP });
                     }
 
@@ -119,7 +119,7 @@ namespace XRFAgent
                         string oldPublicIP = modDatabase.GetConfig("Ping_LastKnownPublicIP");
                         if (oldPublicIP != newPublicIP)
                         {
-                            modLogging.LogEvent("Public IP address changed from " + oldPublicIP + " to " + newPublicIP, EventLogEntryType.Warning);
+                            modLogging.LogEvent("Public IP address changed from " + oldPublicIP + " to " + newPublicIP, EventLogEntryType.Warning, 6013);
                             modDatabase.AddOrUpdateConfig(new modDatabase.Config { Key = "Ping_LastKnownPublicIP", Value = newPublicIP });
                         }
 

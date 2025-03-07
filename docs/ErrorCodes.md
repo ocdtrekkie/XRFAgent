@@ -5,6 +5,8 @@
 
 6011 - Ping error
 6012 - Get public IP error
+6013 - Public IP address change (warning)
+6014 - Local IP address change (warning)
 
 6021 - Update check failed
 6022 - Update failed
