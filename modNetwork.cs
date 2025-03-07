@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Timers;
@@ -41,8 +44,8 @@ namespace XRFAgent
             PingTimer.Enabled = true;
             modLogging.LogEvent("Connectivity checks scheduled", EventLogEntryType.Information);
 
-            Thread InitialGetPublicIP = new Thread(InitialGetPublicIPHandler);
-            InitialGetPublicIP.Start();
+            Thread InitialGetIP = new Thread(InitialGetIPHandler);
+            InitialGetIP.Start();
         }
 
         /// <summary>
@@ -54,6 +57,42 @@ namespace XRFAgent
             {
                 PingTimer.Stop();
             }
+        }
+
+        /// <summary>
+        /// Gets this agent's local network address
+        /// </summary>
+        /// <returns>(string) Local IP address</returns>
+        public static string GetLocalIPAddress()
+        {
+            if (IsOnline == true)
+            {
+                // https://stackoverflow.com/a/44226831
+                // TODO: We need to account for wireless adapters too.
+                List<string> iplist = NetworkInterface.GetAllNetworkInterfaces()
+                   .Where(x => x.NetworkInterfaceType == NetworkInterfaceType.Ethernet && x.OperationalStatus == OperationalStatus.Up)
+                   .SelectMany(x => x.GetIPProperties().UnicastAddresses)
+                   .Where(x => x.Address.AddressFamily == AddressFamily.InterNetwork)
+                   .Select(x => x.Address.ToString())
+                   .ToList();
+
+                foreach (string ip in iplist)
+                {
+                    string newLocalIP = ip;
+
+                    string oldLocalIP = modDatabase.GetConfig("Ping_LastKnownLocalIP");
+                    if (oldLocalIP != newLocalIP)
+                    {
+                        modLogging.LogEvent("Local IP address changed from " + oldLocalIP + " to " + newLocalIP, EventLogEntryType.Warning);
+                        modDatabase.AddOrUpdateConfig(new modDatabase.Config { Key = "Ping_LastKnownLocalIP", Value = newLocalIP });
+                    }
+
+                    return newLocalIP;
+                }
+
+                return "No valid local IP address found";
+            }
+            else return "Not online";
         }
 
         /// <summary>
@@ -141,8 +180,9 @@ namespace XRFAgent
         /// <summary>
         /// Handler to launch initial public IP check on a new Thread
         /// </summary>
-        private static void InitialGetPublicIPHandler()
+        private static void InitialGetIPHandler()
         {
+            GetLocalIPAddress();
             GetPublicIPAddress();
         }
 
