@@ -68,9 +68,8 @@ namespace XRFAgent
             if (IsOnline == true)
             {
                 // https://stackoverflow.com/a/44226831
-                // TODO: We need to account for wireless adapters too.
                 List<string> iplist = NetworkInterface.GetAllNetworkInterfaces()
-                   .Where(x => x.NetworkInterfaceType == NetworkInterfaceType.Ethernet && x.OperationalStatus == OperationalStatus.Up)
+                   .Where(x => (x.NetworkInterfaceType == NetworkInterfaceType.Ethernet || x.NetworkInterfaceType == NetworkInterfaceType.Wireless80211) && x.OperationalStatus == OperationalStatus.Up)
                    .SelectMany(x => x.GetIPProperties().UnicastAddresses)
                    .Where(x => x.Address.AddressFamily == AddressFamily.InterNetwork)
                    .Select(x => x.Address.ToString())
@@ -200,6 +199,7 @@ namespace XRFAgent
                 if (IsOnline == false)
                 {
                     modLogging.LogEvent("System is now connected to the Internet", EventLogEntryType.Information);
+                    GetLocalIPAddress();
                     GetPublicIPAddress();
                 }
                 IsOnline = true;
