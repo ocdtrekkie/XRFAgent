@@ -52,6 +52,31 @@ namespace XRFAgent
         }
 
         /// <summary>
+        /// Changes the sync server and Sandstorm token
+        /// </summary>
+        /// <param name="NewServerURL">(string) New server URL for sync</param>
+        /// <param name="NewSandstormToken">(string) New Sandstorm token for sync</param>
+        /// <returns>(string) Message about result</returns>
+        public static string RemoteRekey(string NewServerURL, string NewSandstormToken)
+        {
+            int SuccessCount = 0;
+            Sync_ServerURL = NewServerURL;
+            Sync_SandstormToken = NewSandstormToken;
+            SuccessCount += modDatabase.UpdateConfig(new modDatabase.Config { Key = "Sync_ServerURL", Value = NewServerURL });
+            SuccessCount += modDatabase.UpdateConfig(new modDatabase.Config { Key = "Sync_SandstormToken", Value = NewSandstormToken });
+            if (SuccessCount == 2)
+            {
+                modLogging.LogEvent("Sync remotely rekeyed", EventLogEntryType.Warning, 6003);
+                return "Remote rekey successful";
+            }
+            else
+            {
+                modLogging.LogEvent("Sync was remotely rekeyed, but it was unsuccessful", EventLogEntryType.Error, 6004);
+                return "Remote rekey failed";
+            }
+        }
+
+        /// <summary>
         /// Sends a message to the sync server
         /// </summary>
         /// <param name="Destination">(string) Intended destination of the message</param>

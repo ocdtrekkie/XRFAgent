@@ -2,6 +2,8 @@
 
 6001 - Sync settings are not configured!
 6002 - Sync error
+6003 - Sync remotely rekeyed (warning)
+6004 - Sync was remotely rekeyed, but it was unsuccessful
 
 6011 - Ping error
 6012 - Get public IP error
