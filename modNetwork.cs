@@ -171,7 +171,13 @@ namespace XRFAgent
             }
             catch (Exception err)
             {
-                modLogging.LogEvent(err.Message, EventLogEntryType.Error, 6011);
+                if (err.InnerException != null)
+                {
+                    modLogging.LogEvent(err.InnerException.Message, EventLogEntryType.Error, 6011);
+                } else
+                {
+                    modLogging.LogEvent(err.Message, EventLogEntryType.Error, 6011);
+                }
                 return "Ping error";
             }
         }
