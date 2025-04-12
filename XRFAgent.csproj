@@ -113,13 +113,13 @@
       <Version>2.1.11</Version>
     </PackageReference>
     <PackageReference Include="System.Memory">
-      <Version>4.6.2</Version>
+      <Version>4.6.3</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
-      <Version>6.1.1</Version>
+      <Version>6.1.2</Version>
     </PackageReference>
     <PackageReference Include="System.Text.Json">
-      <Version>9.0.3</Version>
+      <Version>9.0.4</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
