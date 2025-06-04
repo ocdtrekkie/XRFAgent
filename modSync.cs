@@ -14,6 +14,7 @@ namespace XRFAgent
         private static string Sync_ServerURL;
         private static string Sync_SandstormToken;
         private static string Sync_AccessKey;
+        private static int Sync_LastSuccessful;
 
         /// <summary>
         /// Loads the sync module: Schedules heartbeats
@@ -60,18 +61,28 @@ namespace XRFAgent
         public static string RemoteRekey(string NewServerURL, string NewSandstormToken)
         {
             int SuccessCount = 0;
+            Sync_LastSuccessful = 0;
+            string OldServerURL = Sync_ServerURL;
+            string OldSandstormToken = Sync_SandstormToken;
             Sync_ServerURL = NewServerURL;
             Sync_SandstormToken = NewSandstormToken;
             SuccessCount += modDatabase.UpdateConfig(new modDatabase.Config { Key = "Sync_ServerURL", Value = NewServerURL });
             SuccessCount += modDatabase.UpdateConfig(new modDatabase.Config { Key = "Sync_SandstormToken", Value = NewSandstormToken });
-            if (SuccessCount == 2)
+            SendMessage("server", "fetch", "none");
+            Thread.Sleep(2000);
+            SuccessCount += Sync_LastSuccessful;
+            if (SuccessCount == 3)
             {
                 modLogging.LogEvent("Sync remotely rekeyed", EventLogEntryType.Warning, 6003);
                 return "Remote rekey successful";
             }
             else
             {
-                modLogging.LogEvent("Sync was remotely rekeyed, but it was unsuccessful", EventLogEntryType.Error, 6004);
+                modLogging.LogEvent("Sync attempted a remote rekey, but it was unsuccessful", EventLogEntryType.Error, 6004);
+                Sync_ServerURL = OldServerURL;
+                Sync_SandstormToken = OldSandstormToken;
+                modDatabase.UpdateConfig(new modDatabase.Config { Key = "Sync_ServerURL", Value = OldServerURL });
+                modDatabase.UpdateConfig(new modDatabase.Config { Key = "Sync_SandstormToken", Value = OldSandstormToken });
                 return "Remote rekey failed";
             }
         }
@@ -85,7 +96,7 @@ namespace XRFAgent
         /// <param name="ExtendedMessage">(string) Contents of extended message data</param>
         public static async void SendMessage(string Destination, string MessageType, string Message, string ExtendedMessage = "")
         {
-            // TODO Only send messages if we are online
+            // TODO: Only send messages if we are online
             try
             {
                 HttpClient MessageClient = new HttpClient();
@@ -103,10 +114,12 @@ namespace XRFAgent
                 if (MessageResponse.IsSuccessStatusCode != true)
                 {
                     modLogging.LogEvent("Sync error:" + (int)MessageResponse.StatusCode + " " + MessageResponse.StatusCode, EventLogEntryType.Error, 6002);
+                    Sync_LastSuccessful = 0;
                 }
                 else
                 {
                     string ResponseContent = await MessageResponse.Content.ReadAsStringAsync();
+                    Sync_LastSuccessful = 1;
                     // VERBOSE: Uncomment to show JSON response from server
                     // modLogging.LogEvent((int)MessageResponse.StatusCode + " " + MessageResponse.StatusCode + " " + ResponseContent, EventLogEntryType.Information);
 
@@ -127,6 +140,7 @@ namespace XRFAgent
             }
             catch (Exception err)
             {
+                Sync_LastSuccessful = 0;
                 modLogging.LogEvent(err.Message + "\n\n" + err.StackTrace, EventLogEntryType.Error, 6002);
             }
         }
