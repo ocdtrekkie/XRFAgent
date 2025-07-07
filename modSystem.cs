@@ -255,6 +255,12 @@ namespace XRFAgent
                 SpeedTestRunner.WaitForExit();
                 string speedJson = SpeedTestRunner.StandardOutput.ReadToEnd();
                 modLogging.LogEvent("Speed test results: " + speedJson, EventLogEntryType.Information, 6072);
+                using (JsonDocument speedResults = JsonDocument.Parse(speedJson))
+                {
+                    double downSpeed = Math.Round(speedResults.RootElement.GetProperty("download").GetProperty("bandwidth").GetInt64() / 125000D, 2);
+                    double upSpeed = Math.Round(speedResults.RootElement.GetProperty("upload").GetProperty("bandwidth").GetInt64() / 125000D, 2);
+                    modLogging.LogEvent("Speed test results: " + downSpeed.ToString() + " Mbps Down, " + upSpeed.ToString() + " Mbps Up", EventLogEntryType.Information, 6072);
+                }
                 return SpeedTestRunner.ExitCode;
             }
             catch(Exception err)
