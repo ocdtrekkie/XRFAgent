@@ -50,6 +50,8 @@ namespace XRFAgent
                     if (inputData[1] == "rekey" && inputData[2].StartsWith("https://")) { outputResponse = modSync.RemoteRekey(inputData[2], inputData[3]); } break;
                 case "reset" when inputData.Length == 3:
                     if (inputData[1] == "installed" && inputData[2] == "software") { outputResponse = modSystem.ResetInstalledSoftware(); } break;
+                case "run" when inputData.Length == 2:
+                    if (inputData[1] == "speedtest") { outputResponse = "Running speed test"; modSystem.RunSpeedTest(); } break;
                 case "shutdown" when inputData.Length == 2:
                     if (inputData[1] == "host") { outputResponse = modSystem.ShutdownHost(); } break;
                 case "update" when inputData.Length == 2:

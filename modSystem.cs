@@ -196,6 +196,10 @@ namespace XRFAgent
             }
         }
 
+        /// <summary>
+        /// Installs updates for Windows, installs WindowsUpdatePush tool if it is not present
+        /// </summary>
+        /// <returns>(int) Return code</returns>
         public static int InstallWindowsUpdates()
         {
             try
@@ -221,6 +225,41 @@ namespace XRFAgent
             catch(Exception err)
             {
                 modLogging.LogEvent("Windows Update error: " + err.Message, EventLogEntryType.Error, 6041);
+                return -1;
+            }
+        }
+
+        /// <summary>
+        /// Runs Ookla Speedtest, installs Speedtest CLI tool if it is not present
+        /// </summary>
+        /// <returns></returns>
+        public static int RunSpeedTest()
+        {
+            try
+            {
+                if (File.Exists(Properties.Settings.Default.Tools_FolderURI + "speedtest.exe") == false)
+                {
+                    int installResult = modUpdate.InstallOoklaSpeedtest();
+                    if (installResult == -1)
+                    {
+                        return -1;
+                    }
+                }
+                Process SpeedTestRunner = new Process();
+                SpeedTestRunner.StartInfo.UseShellExecute = false;
+                SpeedTestRunner.StartInfo.RedirectStandardOutput = true;
+                SpeedTestRunner.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                SpeedTestRunner.StartInfo.FileName = Properties.Settings.Default.Tools_FolderURI + "speedtest.exe";
+                SpeedTestRunner.StartInfo.Arguments = "-f json --accept-license";
+                SpeedTestRunner.Start();
+                SpeedTestRunner.WaitForExit();
+                string speedJson = SpeedTestRunner.StandardOutput.ReadToEnd();
+                modLogging.LogEvent("Speed test results: " + speedJson, EventLogEntryType.Information, 6072);
+                return SpeedTestRunner.ExitCode;
+            }
+            catch(Exception err)
+            {
+                modLogging.LogEvent("Speed test error: " + err.Message, EventLogEntryType.Error, 6071);
                 return -1;
             }
         }

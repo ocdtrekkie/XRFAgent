@@ -25,3 +25,6 @@
 6052 - Truncated installed software inventory (informational)
 
 6061 - Detected disk error
+
+6071 - Speed test error
+6072 - Speed test results (informational)
