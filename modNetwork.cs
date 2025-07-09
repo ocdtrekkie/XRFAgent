@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Timers;
 
@@ -133,6 +134,65 @@ namespace XRFAgent
                 }
             }
             else return "Not online";
+        }
+
+        /// <summary>
+        /// Runs Ookla Speedtest, installs Speedtest CLI tool if it is not present
+        /// </summary>
+        /// <returns></returns>
+        public static int RunSpeedTest()
+        {
+            try
+            {
+                if (File.Exists(Properties.Settings.Default.Tools_FolderURI + "speedtest.exe") == false)
+                {
+                    int installResult = modUpdate.InstallOoklaSpeedtest();
+                    if (installResult == -1)
+                    {
+                        return -1;
+                    }
+                }
+                Process SpeedTestRunner = new Process();
+                SpeedTestRunner.StartInfo.UseShellExecute = false;
+                SpeedTestRunner.StartInfo.RedirectStandardOutput = true;
+                SpeedTestRunner.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                SpeedTestRunner.StartInfo.FileName = Properties.Settings.Default.Tools_FolderURI + "speedtest.exe";
+                SpeedTestRunner.StartInfo.Arguments = "-f json --accept-license";
+                SpeedTestRunner.Start();
+                SpeedTestRunner.WaitForExit();
+                string speedJson = SpeedTestRunner.StandardOutput.ReadToEnd();
+                modLogging.LogEvent("Speed test results: " + speedJson, EventLogEntryType.Information, 6072);
+                using (JsonDocument speedResults = JsonDocument.Parse(speedJson))
+                {
+                    string timestamp = speedResults.RootElement.GetProperty("timestamp").GetString();
+                    double downSpeed = Math.Round(speedResults.RootElement.GetProperty("download").GetProperty("bandwidth").GetInt64() / 125000D, 2);
+                    double upSpeed = Math.Round(speedResults.RootElement.GetProperty("upload").GetProperty("bandwidth").GetInt64() / 125000D, 2);
+                    modLogging.LogEvent("Speed test results: " + downSpeed.ToString() + " Mbps Down, " + upSpeed.ToString() + " Mbps Up", EventLogEntryType.Information, 6072);
+
+                    string SpeedTestResultsJSON = "{\"systemdetails\":[";
+                    modDatabase.Config ConfigObj;
+
+                    ConfigObj = new modDatabase.Config { Key = "Speedtest_Download", Value = downSpeed.ToString() };
+                    modDatabase.AddOrUpdateConfig(ConfigObj);
+                    SpeedTestResultsJSON = SpeedTestResultsJSON + JsonSerializer.Serialize(ConfigObj) + ",";
+
+                    ConfigObj = new modDatabase.Config { Key = "Speedtest_Upload", Value = upSpeed.ToString() };
+                    modDatabase.AddOrUpdateConfig(ConfigObj);
+                    SpeedTestResultsJSON = SpeedTestResultsJSON + JsonSerializer.Serialize(ConfigObj) + ",";
+
+                    ConfigObj = new modDatabase.Config { Key = "Speedtest_LastRun", Value = timestamp };
+                    modDatabase.AddOrUpdateConfig(ConfigObj);
+                    SpeedTestResultsJSON = SpeedTestResultsJSON + JsonSerializer.Serialize(ConfigObj) + "]}";
+
+                    modSync.SendMessage("server", "nodedata", "systemdetails", SpeedTestResultsJSON);
+                }
+                return SpeedTestRunner.ExitCode;
+            }
+            catch (Exception err)
+            {
+                modLogging.LogEvent("Speed test error: " + err.Message, EventLogEntryType.Error, 6071);
+                return -1;
+            }
         }
 
         /// <summary>

@@ -51,7 +51,7 @@ namespace XRFAgent
                 case "reset" when inputData.Length == 3:
                     if (inputData[1] == "installed" && inputData[2] == "software") { outputResponse = modSystem.ResetInstalledSoftware(); } break;
                 case "run" when inputData.Length == 2:
-                    if (inputData[1] == "speedtest") { outputResponse = "Running speed test"; modSystem.RunSpeedTest(); } break;
+                    if (inputData[1] == "speedtest") { outputResponse = "Running speed test"; modNetwork.RunSpeedTest(); } break;
                 case "shutdown" when inputData.Length == 2:
                     if (inputData[1] == "host") { outputResponse = modSystem.ShutdownHost(); } break;
                 case "update" when inputData.Length == 2:
