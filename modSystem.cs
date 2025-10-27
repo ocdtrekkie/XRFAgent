@@ -90,6 +90,17 @@ namespace XRFAgent
         }
 
         /// <summary>
+        /// Clears an existing disk failure warning.
+        /// </summary>
+        /// <returns>Result of resetting disk alert</returns>
+        public static string ResetDiskAlert()
+        {
+            modLogging.LogEvent("Reset disk alert", EventLogEntryType.Information, 6062);
+            modSync.SendSingleConfig("Alert_DiskFailure", "cleared");
+            return "Disk alert cleared";
+        }
+
+        /// <summary>
         /// Drops the installed software inventory, then gathers an updated version.
         /// </summary>
         /// <returns>Result of new applications detected</returns>

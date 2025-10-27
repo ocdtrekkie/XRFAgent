@@ -26,5 +26,8 @@
 
 6061 - Detected disk error
 
+6062 - Reset disk alert (informational)
+
 6071 - Speed test error
 6072 - Speed test results (informational)
+

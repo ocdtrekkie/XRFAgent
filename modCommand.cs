@@ -49,6 +49,7 @@ namespace XRFAgent
                 case "remote" when inputData.Length == 4:
                     if (inputData[1] == "rekey" && inputData[2].StartsWith("https://")) { outputResponse = modSync.RemoteRekey(inputData[2], inputData[3]); } break;
                 case "reset" when inputData.Length == 3:
+                    if (inputData[1] == "disk" && inputData[2] == "alert") { outputResponse = modSystem.ResetDiskAlert(); }
                     if (inputData[1] == "installed" && inputData[2] == "software") { outputResponse = modSystem.ResetInstalledSoftware(); } break;
                 case "run" when inputData.Length == 2:
                     if (inputData[1] == "speedtest") { outputResponse = "Running speed test"; modNetwork.RunSpeedTest(); } break;
