@@ -25,8 +25,8 @@
 6052 - Truncated installed software inventory (informational)
 
 6061 - Detected disk error
-
-6062 - Reset disk alert (informational)
+6062 - Reset disk alerts (informational)
+6063 - System disk low space error
 
 6071 - Speed test error
 6072 - Speed test results (informational)

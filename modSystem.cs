@@ -95,8 +95,15 @@ namespace XRFAgent
         /// <returns>Result of resetting disk alert</returns>
         public static string ResetDiskAlert()
         {
-            modLogging.LogEvent("Reset disk alert", EventLogEntryType.Information, 6062);
-            modSync.SendSingleConfig("Alert_DiskFailure", "cleared");
+            modLogging.LogEvent("Reset disk alerts", EventLogEntryType.Information, 6062);
+            if (modDatabase.GetConfig("Alert_DiskFailure") != null)
+            {
+                modSync.SendSingleConfig("Alert_DiskFailure", "cleared");
+            }
+            if (modDatabase.GetConfig("Alert_SystemDiskSpaceLow") != null)
+            {
+                modSync.SendSingleConfig("Alert_SystemDiskSpaceLow", "cleared");
+            }
             return "Disk alert cleared";
         }
 
@@ -185,6 +192,15 @@ namespace XRFAgent
                         ConfigObj = new modDatabase.Config { Key = "System_Drive_" + dLetter + "_TotalFreeSpace", Value = d.TotalFreeSpace.ToString() };
                         modDatabase.AddOrUpdateConfig(ConfigObj);
                         SystemDetailsJSON = SystemDetailsJSON + JsonSerializer.Serialize(ConfigObj) + ",";
+
+                        if (dLetter == "C") {
+                            int percentFree = (int)Math.Round((double)(d.TotalFreeSpace * 100 / d.TotalSize));
+                            if (percentFree <= 10)
+                            {
+                                modLogging.LogEvent("Detected low disk space on C: drive: " + percentFree.ToString() + "% free", EventLogEntryType.Warning, 6063);
+                                modSync.SendSingleConfig("Alert_SystemDiskSpaceLow", "reported");
+                            }
+                        }
                     }
                 }
 
