@@ -317,22 +317,53 @@ namespace XRFAgent
 
         public static string DisableWebExtensions()
         {
+            // Block all extensions on Chrome and Edge not explicitly permitted
             RegistryKey chromeExtensions = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Google\Chrome\ExtensionInstallBlocklist", true);
             chromeExtensions.SetValue("1", "*", RegistryValueKind.String);
             RegistryKey edgeExtensions = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Microsoft\Edge\ExtensionInstallBlocklist", true);
             edgeExtensions.SetValue("1", "*", RegistryValueKind.String);
+
+            //Allowed Chrome and Edge extensions
+            // - uBlock Origin Lite: ddkjiahejlhfcafbddmgiahcphecmpfh, cimighlppcgcoapaliogpjjdehbnofhn
+            // - uBlock Origin: cjpalhdlnbpafiamejdnhcphjbkeiagm, odfafepnkmbhccpbejgmiehpchacaeak
+            // - Privacy Badger: pkehgijcmpdhfbdbbnkijodmdjhbjlgp, mkejgcgkdlddbggjhhflekkondicpnop
+            // - MalwareBytes Browser Guard: ihcjicgdanjaechkgeegckofjjedodee, bojobppfploabceghnmlahpoonbcbacn
+            string[] allowedChromiumExtensions = new[] { "ddkjiahejlhfcafbddmgiahcphecmpfh", "cimighlppcgcoapaliogpjjdehbnofhn",
+                "cjpalhdlnbpafiamejdnhcphjbkeiagm", "odfafepnkmbhccpbejgmiehpchacaeak",
+                "pkehgijcmpdhfbdbbnkijodmdjhbjlgp", "mkejgcgkdlddbggjhhflekkondicpnop",
+                "ihcjicgdanjaechkgeegckofjjedodee", "bojobppfploabceghnmlahpoonbcbacn" };
+
+            // Write allow-list for Chrome
+            RegistryKey chromeAllow = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Google\Chrome\ExtensionInstallAllowlist", true);
+            for (int i = 0; i < allowedChromiumExtensions.Length; i++)
+            {
+                chromeAllow.SetValue((i + 1).ToString(), allowedChromiumExtensions[i], RegistryValueKind.String);
+            }
+
+            // Write allow-list for Edge
+            RegistryKey edgeAllow = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Microsoft\Edge\ExtensionInstallAllowlist", true);
+            for (int i = 0; i < allowedChromiumExtensions.Length; i++)
+            {
+                edgeAllow.SetValue((i + 1).ToString(), allowedChromiumExtensions[i], RegistryValueKind.String);
+            }
+
             RegistryKey firefoxExtensions = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Mozilla\Firefox", true);
+            // Block all extensions on Firefox not explicitly permitted
             // Allowed Firefox extensions
+            // - uBlock Origin Lite: uBOLiteRedux@raymondhill.net
             // - uBlock Origin: uBlock@raymondhill.net
             // - Privacy Badger: jid1-MnnxcxisBPnSXQ@jetpack
             // - Facebook Container: @contain-facebook
             // - MalwareBytes Browser Guard: {242af0bb-db11-4734-b7a0-61cb8a9b20fb}
             string firefoxExtensionPolicyJson = @"{
   ""*"": {
-    ""blocked_install_message"": ""Unapproved extensions are not permitted."",
+    ""blocked_install_message"": ""For your protection, only specific extensions are allowed."",
     ""install_sources"": [""about:addons"", ""https://addons.mozilla.org/""],
     ""installation_mode"": ""blocked"",
     ""allowed_types"": [""extension""]
+  },
+  ""uBOLiteRedux@raymondhill.net"": {
+    ""installation_mode"": ""allowed""
   },
   ""uBlock0@raymondhill.net"": {
     ""installation_mode"": ""allowed""
