@@ -322,11 +322,44 @@ namespace XRFAgent
             RegistryKey edgeExtensions = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Microsoft\Edge\ExtensionInstallBlocklist", true);
             edgeExtensions.SetValue("1", "*", RegistryValueKind.String);
             RegistryKey firefoxExtensions = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Mozilla\Firefox", true);
-            string[] firefoxExtensionPolicy = {"{", "  \"*\":{", "    \"blocked_install_message\": \"Unapproved extensions are not permitted.\",", "    \"install_sources\": [\"about:addons\",\"https://addons.mozilla.org/\"],", "    \"installation_mode\": \"blocked\",", "    \"allowed_types\": [\"extension\"]", "  },", "  \"uBlock0@raymondhill.net\":{", "    \"installation_mode\": \"allowed\"", "  },", "  \"jid1-MnnxcxisBPnSXQ@jetpack\":{", "    \"installation_mode\": \"allowed\"", "  },", "  \"@contain-facebook\":{", "    \"installation_mode\": \"allowed\"", "  }", "}" };
-            firefoxExtensions.SetValue("ExtensionSettings", firefoxExtensionPolicy, RegistryValueKind.MultiString);
-
-            modSync.SendSingleConfig("Security_WebExtensions", "disabled");
-            return "Browser extensions disabled";
+            // Allowed Firefox extensions
+            // - uBlock Origin: uBlock@raymondhill.net
+            // - Privacy Badger: jid1-MnnxcxisBPnSXQ@jetpack
+            // - Facebook Container: @contain-facebook
+            // - MalwareBytes Browser Guard: {242af0bb-db11-4734-b7a0-61cb8a9b20fb}
+            string firefoxExtensionPolicyJson = @"{
+  ""*"": {
+    ""blocked_install_message"": ""Unapproved extensions are not permitted."",
+    ""install_sources"": [""about:addons"", ""https://addons.mozilla.org/""],
+    ""installation_mode"": ""blocked"",
+    ""allowed_types"": [""extension""]
+  },
+  ""uBlock0@raymondhill.net"": {
+    ""installation_mode"": ""allowed""
+  },
+  ""jid1-MnnxcxisBPnSXQ@jetpack"": {
+    ""installation_mode"": ""allowed""
+  },
+  ""@contain-facebook"": {
+    ""installation_mode"": ""allowed""
+  },
+  ""{242af0bb-db11-4734-b7a0-61cb8a9b20fb}"": {
+    ""installation_mode"": ""allowed""
+  }
+}";
+            try
+            {
+                JsonDocument.Parse(firefoxExtensionPolicyJson);
+                string[] firefoxExtensionPolicy = firefoxExtensionPolicyJson.Split(new[] { "\r\n", "\n" }, System.StringSplitOptions.None);
+                firefoxExtensions.SetValue("ExtensionSettings", firefoxExtensionPolicy, RegistryValueKind.MultiString);
+                modSync.SendSingleConfig("Security_WebExtensions", "disabled");
+                return "Browser extensions disabled";
+            }
+            catch (JsonException ex)
+            {
+                modLogging.LogEvent("Invalid JSON for Firefox extension policy: " + ex.Message, EventLogEntryType.Error, 6033);
+                return "Unable to set browser extension policy";
+            }
         }
 
         /// <summary>

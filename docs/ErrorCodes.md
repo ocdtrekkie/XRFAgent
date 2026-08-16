@@ -17,6 +17,7 @@
 
 6031 - External process start error
 6032 - Registry access error
+6033 - Policy configuration error
 
 6041 - Windows Update error
 6042 - Windows Update results (informational)
